@@ -1,41 +1,134 @@
-import {createTheme} from '@mui/material/styles';
-import themeJson from './theme.json'
+import { createTheme } from "@mui/material/styles";
+import themeJson from "./Theme.json";
 
+// Create a theme instance using the theme.json file as a base
 const theme = createTheme({
-    palette: {
-        primary: {
-            main: themeJson.coreColors.primary,
-        },
-        secondary: {
-            main: themeJson.coreColors.secondary,
-        },
-        tertiary: {
-            main: themeJson.coreColors.tertiary,
-        },
-        neutral: {
-            main: themeJson.coreColors.neutral,
-        },
-        neutralVariant: {
-            main: themeJson.coreColors.neutralVariant,
-        },
-        error: {
-            main: themeJson.coreColors.error,
-        }
+  palette: {
+    primary: {
+      main: themeJson.coreColors.primary,
     },
-    // Take out schemes values from theme.json path way: Frontend/src/theme.json
-    schemes:{
-        light: {
-            primary: themeJson.schemes.light.primary,
-            onPrimary: themeJson.schemes.light.onPrimary,
-            primaryContainer: themeJson.schemes.light.primaryContainer,
-            onPrimaryContainer: themeJson.schemes.light.onPrimaryContainer,
-            primaryFixed: themeJson.schemes.light.primaryFixed,
-            onPrimaryFixed: themeJson.schemes.light.onPrimaryFixed,
-            onPrimaryFixedDim: themeJson.schemes.light.onPrimaryFixedDim,
-            onPrimaryFixedVariant: themeJson.schemes.light.onPrimaryFixedVariant,
+    secondary: {
+      main: themeJson.coreColors.secondary,
+    },
+    tertiary: {
+      main: themeJson.coreColors.tertiary,
+    },
+    neutral: {
+      main: themeJson.coreColors.neutral,
+    },
+    neutralVariant: {
+      main: themeJson.coreColors.neutralVariant,
+    },
+  },
+  schemes: {
+    light: {
+      primary: themeJson.schemes.light.primary,
+      onPrimary: themeJson.schemes.light.onPrimary,
+      primaryContainer: themeJson.schemes.light.primaryContainer,
+      onPrimaryContainer: themeJson.schemes.light.onPrimaryContainer,
+      primaryFixed: themeJson.schemes.light.primaryFixed,
+      onPrimaryFixed: themeJson.schemes.light.onPrimaryFixed,
+      onPrimaryFixedDim: themeJson.schemes.light.onPrimaryFixedDim,
+      onPrimaryFixedVariant: themeJson.schemes.light.onPrimaryFixedVariant,
+      secondary: themeJson.schemes.light.secondary,
+      onSecondary: themeJson.schemes.light.onSecondary,
+      secondaryContainer: themeJson.schemes.light.secondaryContainer,
+      onSecondaryContainer: themeJson.schemes.light.onSecondaryContainer,
+      secondaryFixed: themeJson.schemes.light.secondaryFixed,
+      onSecondaryFixed: themeJson.schemes.light.onSecondaryFixed,
+      onSecondaryFixedDim: themeJson.schemes.light.onSecondaryFixedDim,
+      onSecondaryFixedVariant: themeJson.schemes.light.onSecondaryFixedVariant,
+      tertiary: themeJson.schemes.light.tertiary,
+      onTertiary: themeJson.schemes.light.onTertiary,
+      tertiaryContainer: themeJson.schemes.light.tertiaryContainer,
+      onTertiaryContainer: themeJson.schemes.light.onTertiaryContainer,
+      tertiaryFixed: themeJson.schemes.light.tertiaryFixed,
+      onTertiaryFixed: themeJson.schemes.light.onTertiaryFixed,
+      onTertiaryFixedDim: themeJson.schemes.light.onTertiaryFixedDim,
+      onTertiaryFixedVariant: themeJson.schemes.light.onTertiaryFixedVariant,
+      error: themeJson.schemes.light.error,
+      errorContainer: themeJson.schemes.light.errorContainer,
+      onError: themeJson.schemes.light.onError,
+      onErrorContainer: themeJson.schemes.light.onErrorContainer,
+      background: themeJson.schemes.light.background,
+      onBackground: themeJson.schemes.light.onBackground,
+      outline: themeJson.schemes.light.outline,
+      inverseOnSurface: themeJson.schemes.light.inverseOnSurface,
+      inverseSurface: themeJson.schemes.light.inverseSurface,
+      inversePrimary: themeJson.schemes.light.inversePrimary,
+      shadow: themeJson.schemes.light.shadow,
+      surfaceTint: themeJson.schemes.light.surfaceTint,
+      outlineVariant: themeJson.schemes.light.outlineVariant,
+      scrim: themeJson.schemes.light.scrim,
+      surface: themeJson.schemes.light.surface,
+      onSurface: themeJson.schemes.light.onSurface,
+      surfaceVariant: themeJson.schemes.light.surfaceVariant,
+      onSurfaceVariant: themeJson.schemes.light.onSurfaceVariant,
+      surfaceContainerHighest: themeJson.schemes.light.surfaceContainerHighest,
+      surfaceContainerHigh: themeJson.schemes.light.surfaceContainerHigh,
+      surfaceContainer: themeJson.schemes.light.surfaceContainer,
+      surfaceContainerLow: themeJson.schemes.light.surfaceContainerLow,
+      surfaceContainerLowest: themeJson.schemes.light.surfaceContainerLowest,
+      surfaceDim: themeJson.schemes.light.surfaceDim,
+      surfaceBright: themeJson.schemes.light.surfaceBright,
+    },
+    dark: {
+      primary: themeJson.schemes.dark.primary,
+      onPrimary: themeJson.schemes.dark.onPrimary,
+      primaryContainer: themeJson.schemes.dark.primaryContainer,
+      onPrimaryContainer: themeJson.schemes.dark.onPrimaryContainer,
+      primaryFixed: themeJson.schemes.dark.primaryFixed,
+      onPrimaryFixed: themeJson.schemes.dark.onPrimaryFixed,
+      onPrimaryFixedDim: themeJson.schemes.dark.onPrimaryFixedDim,
+      onPrimaryFixedVariant: themeJson.schemes.dark.onPrimaryFixedVariant,
+      secondary: themeJson.schemes.dark.secondary,
+      onSecondary: themeJson.schemes.dark.onSecondary,
+      secondaryContainer: themeJson.schemes.dark.secondaryContainer,
+      onSecondaryContainer: themeJson.schemes.dark.onSecondaryContainer,
+      secondaryFixed: themeJson.schemes.dark.secondaryFixed,
+      onSecondaryFixed: themeJson.schemes.dark.onSecondaryFixed,
+      onSecondaryFixedDim: themeJson.schemes.dark.onSecondaryFixedDim,
+      onSecondaryFixedVariant: themeJson.schemes.dark.onSecondaryFixedVariant,
+      tertiary: themeJson.schemes.dark.tertiary,
+      onTertiary: themeJson.schemes.dark.onTertiary,
+      tertiaryContainer: themeJson.schemes.dark.tertiaryContainer,
+      onTertiaryContainer: themeJson.schemes.dark.onTertiaryContainer,
+      tertiaryFixed: themeJson.schemes.dark.tertiaryFixed,
+      onTertiaryFixed: themeJson.schemes.dark.onTertiaryFixed,
+      onTertiaryFixedDim: themeJson.schemes.dark.onTertiaryFixedDim,
+      onTertiaryFixedVariant: themeJson.schemes.dark.onTertiaryFixedVariant,
+      error: themeJson.schemes.dark.error,
+      errorContainer: themeJson.schemes.dark.errorContainer,
+      onError: themeJson.schemes.dark.onError,
+      onErrorContainer: themeJson.schemes.dark.onErrorContainer,
+      background: themeJson.schemes.dark.background,
+      onBackground: themeJson.schemes.dark.onBackground,
+      outline: themeJson.schemes.dark.outline,
+      inverseOnSurface: themeJson.schemes.dark.inverseOnSurface,
+      inverseSurface: themeJson.schemes.dark.inverseSurface,
+      inversePrimary: themeJson.schemes.dark.inversePrimary,
+      shadow: themeJson.schemes.dark.shadow,
+      surfaceTint: themeJson.schemes.dark.surfaceTint,
+      outlineVariant: themeJson.schemes.dark.outlineVariant,
+      scrim: themeJson.schemes.dark.scrim,
+      surface: themeJson.schemes.dark.surface,
+      onSurface: themeJson.schemes.dark.onSurface,
+      surfaceVariant: themeJson.schemes.dark.surfaceVariant,
+      onSurfaceVariant: themeJson.schemes.dark.onSurfaceVariant,
+      surfaceContainerHighest: themeJson.schemes.dark.surfaceContainerHighest,
+      surfaceContainerHigh: themeJson.schemes.dark.surfaceContainerHigh,
+      surfaceContainer: themeJson.schemes.dark.surfaceContainer,
+      surfaceContainerLow: themeJson.schemes.dark.surfaceContainerLow,
+      surfaceContainerLowest: themeJson.schemes.dark.surfaceContainerLowest,
+      surfaceDim: themeJson.schemes.dark.surfaceDim,
+      surfaceBright: themeJson.schemes.dark.surfaceBright,
+    },
+  },
+  typography: {
+    h1: {
+      fontSize: themeJson.styles.display.large.fontSize,
+    },
+  },
+});
 
-
-            
-        }
-    }
-})
+export default theme;
