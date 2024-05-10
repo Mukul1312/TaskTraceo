@@ -1,10 +1,5 @@
-import {
-  Links,
-  Meta,
-  Outlet,
-  Scripts,
-  ScrollRestoration,
-} from "@remix-run/react";
+import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "@remix-run/react";
+import { ManifestLink } from "@remix-pwa/sw";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -12,6 +7,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <ManifestLink />
         <Meta />
         <Links />
       </head>
