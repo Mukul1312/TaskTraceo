@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "remix vite:build",
+    "dev:remix": "remix vite:dev",
+    "start:remix": "remix-serve ./build/server/index.js",
     "dev": "node ./server.js",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
     "start": "cross-env NODE_ENV=production node ./server.js",
@@ -25,9 +27,11 @@
     "react-dom": "^18.2.0",
     "remix-auth": "^3.6.0",
     "remix-auth-form": "^1.5.0",
-    "remix-auth-oauth2": "^1.11.2"
+    "remix-auth-oauth2": "^1.11.2",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.4.1",
     "@remix-pwa/dev": "^3.0.5",
     "@remix-pwa/sw": "^3.0.5",
     "@remix-pwa/worker-runtime": "^2.1.1",

@@ -1,6 +1,5 @@
 import { createRequestHandler } from "@remix-run/express";
 import express from "express";
-
 import { installGlobals } from "@remix-run/node";
 
 installGlobals();
@@ -35,12 +34,15 @@ if (viteDevServer) {
 
 app.use(express.static("build/client", { maxAge: "1h" }));
 
-// needs to handle all verbs (GET, POST, etc.)
-app.all("*", async (req, res, next) => {
-  // purgeRequireCache();
-  const build = await import("./build/server/index.js");
-  return createRequestHandler({ build })(req, res, next);
-});
+// handle SSR requests
+app.all(
+  "*",
+  createRequestHandler({
+    build: viteDevServer
+      ? () => viteDevServer.ssrLoadModule("virtual:remix/server-build")
+      : await import("./build/server/index.js"),
+  })
+);
 
 // this env runs only on development environment. Means when running viteDevServer (see above code)
 // eslint-disable-next-line no-undef

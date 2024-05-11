@@ -7,5 +7,8 @@ import { remixPWA } from "@remix-pwa/dev";
 installGlobals();
 
 export default defineConfig({
+  server: {
+    port: 3000,
+  },
   plugins: [remix(), tsconfigPaths(), remixPWA({})],
 });

@@ -1,20 +1,62 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
-import { Form, Link, useLoaderData } from "@remix-run/react";
+import { json, redirect } from "@remix-run/node";
+import { Form, useActionData, useLoaderData } from "@remix-run/react";
+import User from "~/.server/models/user.model";
 import { InputWithLeadIcon } from "~/components/InputWithLeadIcon";
 import { Logo } from "~/components/logo";
+import { faker } from "@faker-js/faker";
 
 import { auth } from "~/services/auth.server";
-import { sessionStorage } from "~/services/session.server";
+import { commitSession, getSession, sessionStorage } from "~/services/session.server";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const email = await auth.authenticate("form", request, {
-    successRedirect: "/dashboard",
-    failureRedirect: "/login",
+  const formData = await request.formData();
+  const email = String(formData.get("email"));
+  const password = String(formData.get("password"));
+  const name = String(formData.get("name"));
+
+  console.log(name, email, password);
+
+  const errors: { email?: string; message?: string } = {};
+
+  if (!email.includes("@")) {
+    errors.email = "Invalid email address";
+  }
+
+  if (Object.keys(errors).length > 0) {
+    return json({ errors });
+  }
+
+  const getUser = await User.getUserByEmail(email);
+
+  if (getUser) {
+    // manually get the session
+    const session = await getSession(request.headers.get("cookie"));
+    // and store the user data
+    session.set(auth.sessionKey, getUser);
+
+    return redirect("/dashboard", {
+      headers: {
+        "Set-Cookie": await commitSession(session),
+      },
+    });
+  }
+
+  const user = await User.createUser({
+    email: email,
+    name: name,
+    password: password,
+    mobile: faker.phone.number(),
+    address: faker.location.streetAddress(),
+    dob: String(faker.date.birthdate()),
+    isAdmin: false,
+    postal_code: faker.location.zipCode(),
+    city: faker.location.city(),
+    state: faker.location.state(),
+    ctry: faker.location.country(),
   });
 
-  return json({ email });
+  return json({ user });
 };
 
 type LoaderError = { message: string } | null;
@@ -25,20 +67,53 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return json({ error });
 };
 
-export default function Screen() {
+export default function SignUp() {
+  const userData = useActionData<typeof action>();
   const { error } = useLoaderData<typeof loader>();
+  // const navigate = useNavigate();
 
+  let message: string = "";
+
+  if (userData && "errors" in userData) {
+    message = userData.errors.email || "";
+  } else if (userData && "user" in userData) {
+    message = `User created ${userData.user.name.toUpperCase()}`;
+  }
   return (
     <div className="h-screen px-5 w-screen">
       <div className="h-full flex flex-col justify-center items-center gap-10">
         <Form method="post" className="flex flex-col justify-center items-center">
-          {error ? <div className="text-red-600">{error.message}</div> : null}
+          {message}
+          {error ? <div className="text-red-600">{`error.message`}</div> : null}
           <div className="text-center">
             <Logo />
           </div>
           <div className="flex flex-col gap-5 w-full">
-            <p className="text-[#474747] font-medium text-[14px] text-center">Login to your account</p>
+            <p className="text-[#474747] font-medium text-[14px] text-center">Create your account</p>
             <div className="flex flex-col gap-5 w-full">
+              <InputWithLeadIcon
+                inputName="name"
+                type="text"
+                placeholder="Username"
+                //@ts-expect-error: type mismatch
+                svg={
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="white"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="white"
+                    width="20"
+                    height="20"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+                    />
+                  </svg>
+                }
+              />
               <InputWithLeadIcon
                 inputName="email"
                 type="email"
@@ -75,16 +150,9 @@ export default function Screen() {
                 }
               />
             </div>
-            <span className="text-black self-end">Forgot password?</span>
-            <button className="bg-secondary py-3 text-white rounded-lg ">Log In</button>
+            <button className="bg-secondary py-3 text-white rounded-lg ">Register</button>
           </div>
         </Form>
-        <div className="">
-          <span>Don&apos;t have an account?</span>
-          <Link to="/signup" className="text-secondary">
-            Sign up
-          </Link>
-        </div>
       </div>
     </div>
   );
