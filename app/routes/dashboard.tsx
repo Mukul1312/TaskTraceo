@@ -42,8 +42,6 @@ export default function Dashboard() {
   const [taskDone, setTaskDone] = useState<string[]>([""]);
   const loaderData = useLoaderData<typeof loader>();
 
-  console.log(loaderData);
-
   const clickDone = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
     const svgId = (e.target as SVGSVGElement).id;
     console.log(svgId);
