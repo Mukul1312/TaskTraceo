@@ -4,12 +4,12 @@ import { json } from "@remix-run/node";
 export const loader = () => {
   return json(
     {
-      short_name: "PWA",
-      name: "Remix PWA",
-      description: "Remix Based PWA",
+      short_name: "Task Traceo",
+      name: "Task Traceo",
+      description: "A Task Management App",
       start_url: "/",
       display: "standalone",
-      background_color: "#d3d7dd",
+      background_color: "#ffffff",
       theme_color: "#34A853",
       orientation: "portrait",
       icons: [
@@ -18,14 +18,27 @@ export const loader = () => {
           sizes: "512x512",
           type: "image/png",
         },
+        {
+          src: "android-chrome-192x192.png",
+          sizes: "192x192",
+          type: "image/png",
+        },
+        {
+          src: "android-chrome-512x512.png",
+          sizes: "512x512",
+          type: "image/png",
+        },
       ],
       screenshots: [
         {
-          src: "screenshot.png",
-          sizes: "546x1100",
+          src: "login-screenshot.png",
+          sizes: "1440x2960",
           type: "image/png",
-          // @ts-expect-error: fa
-          form_factor: "wide",
+        },
+        {
+          src: "splash-screenshot.png",
+          sizes: "1500x3248",
+          type: "image/png",
         },
       ],
     } as WebAppManifest,
