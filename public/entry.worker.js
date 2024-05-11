@@ -115,6 +115,8 @@ const route5 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
 const assets = [
   "/entry.worker.js",
   "/favicon.ico",
+  "/login-down-icon.svg",
+  "/login-lock-icon.svg",
   "/maskable_icon.png",
   "/maskable_icon_x192.png",
   "/maskable_icon_x512.png",

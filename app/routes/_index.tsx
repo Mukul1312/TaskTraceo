@@ -1,20 +1,22 @@
-import type { MetaFunction } from "@remix-run/node";
+import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { Logo } from "~/components/logo";
-import { db } from "~/.server/data";
-import { useLoaderData } from "@remix-run/react";
+import { auth } from "~/services/auth.server";
 
 export const meta: MetaFunction = () => {
   return [{ title: "Task Traceo" }, { name: "description", content: "Task Management App!" }];
 };
 
-export async function loader() {
-  const response = db.user.getAll();
-  return response;
+export async function loader({ request }: LoaderFunctionArgs) {
+  await auth.isAuthenticated(request, {
+    failureRedirect: "/login",
+  });
+
+  await auth.isAuthenticated(request, {
+    successRedirect: "/dashboard",
+  });
 }
 
 export default function Index() {
-  const data = useLoaderData<typeof loader>();
-  console.log(data);
   return (
     <div className="bg-white flex justify-center items-center h-screen">
       <div className="">
