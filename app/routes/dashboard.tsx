@@ -1,122 +1,58 @@
-import { LoaderFunctionArgs, json } from "@remix-run/node"; // or cloudflare/deno
+import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node"; // or cloudflare/deno
 // import { useLoaderData } from "@remix-run/react";
 import { Carousel } from "~/components/carousel";
 import { TaskCarousel } from "~/components/taskCarousel";
 import { auth } from "~/services/auth.server";
 import { useState } from "react";
+import { AppBar } from "~/components/appBar";
+import data from "~/.server/data";
+import { useLoaderData } from "@remix-run/react";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const email = await auth.isAuthenticated(request, {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _ = await auth.isAuthenticated(request, {
     failureRedirect: "/login",
   });
 
-  return json({ email });
+  const response = data;
+
+  return response;
 };
 
-interface TaskDetails {
-  taskName: string;
-  progressPerc: number;
-  remaningDays: number;
-  themeColor: string;
-}
+export const action = async ({ request }: ActionFunctionArgs) => {
+  const formData = await request.formData();
+  const name = formData.get("name");
 
-const data: TaskDetails[] = [
-  {
-    taskName: "UI Design",
-    progressPerc: 80,
-    remaningDays: 10,
-    themeColor: "red",
-  },
-  {
-    taskName: "Backend Development",
-    progressPerc: 60,
-    remaningDays: 5,
-    themeColor: "green",
-  },
-  {
-    taskName: "Database Setup",
-    progressPerc: 30,
-    remaningDays: 8,
-    themeColor: "blue",
-  },
-  {
-    taskName: "Testing",
-    progressPerc: 20,
-    remaningDays: 7,
-    themeColor: "yellow",
-  },
-  {
-    taskName: "Frontend Integration",
-    progressPerc: 40,
-    remaningDays: 6,
-    themeColor: "orange",
-  },
-  {
-    taskName: "API Documentation",
-    progressPerc: 50,
-    remaningDays: 4,
-    themeColor: "pink",
-  },
-  {
-    taskName: "Bug Fixing",
-    progressPerc: 10,
-    remaningDays: 9,
-    themeColor: "green",
-  },
-  {
-    taskName: "Deployment",
-    progressPerc: 70,
-    remaningDays: 3,
-    themeColor: "grey",
-  },
-  {
-    taskName: "User Acceptance Testing",
-    progressPerc: 25,
-    remaningDays: 2,
-    themeColor: "green",
-  },
-  {
-    taskName: "Final Review",
-    progressPerc: 90,
-    remaningDays: 1,
-    themeColor: "brown",
-  },
-];
-
-interface DailyTaskDetails {
-  taskName: string;
-}
-
-const dailyTaskData: DailyTaskDetails[] = [
-  { taskName: "Workout" },
-  { taskName: "Reading" },
-  { taskName: "Meditation" },
-  { taskName: "Cooking" },
-  { taskName: "Writing" },
-  { taskName: "Coding" },
-  { taskName: "Walking" },
-  { taskName: "Drawing" },
-  { taskName: "Learning" },
-  { taskName: "Listening to Music" },
+  return `${name} task done`;
+};
+const dailyTaskData: string[] = [
+  "Workout",
+  "Reading",
+  "Meditation",
+  "Cooking",
+  "Writing",
+  "Coding",
+  "Walking",
+  "Drawing",
+  "Learning",
+  "Listening to Music",
 ];
 
 export default function Dashboard() {
-  const [taskDone, setTaskDone] = useState<DailyTaskDetails[] | undefined>([]);
+  const [taskDone, setTaskDone] = useState<string[]>([""]);
+  const loaderData = useLoaderData<typeof loader>();
+
+  console.log(loaderData);
 
   const clickDone = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
     const svgId = (e.target as SVGSVGElement).id;
     console.log(svgId);
-    setTaskDone((prevState) => {
-      prevState && prevState.push({ taskName: svgId });
-      return prevState;
-    });
-    console.log("Inside click handler", taskDone);
+    if (!taskDone?.includes(svgId)) setTaskDone((prevState) => [...prevState, svgId]);
+    else setTaskDone((prevState) => prevState.filter((item) => item != svgId));
   };
 
-  console.log("Inside dashboard", taskDone);
-
   return (
-    <div className="pt-5 h-screen overflow-hidden">
+    <div className="pt-5 h-screen overflow-hidden relative">
       <div className="flex flex-row justify-between items-center mx-5">
         <span className="text-[12px] font-normal">Saturday, Feb 20 2024</span>
         <svg
@@ -134,18 +70,19 @@ export default function Dashboard() {
           />
         </svg>
       </div>
-      <div className="mx-5">
+      <div className="mx-5 mt-5">
         <p className="text-[24px] font-bold">Welcome Phillip</p>
         <p className="text-[16px] font-medium text-[#474747]">Have a nice day !</p>
       </div>
       <div className="ml-5 mt-5">
         <p className="text-[20px] font-semibold leading-10">My Priority Task</p>
-        <Carousel carouselItems={data} />
+        <Carousel carouselItems={loaderData} />
       </div>
       <div className="mx-5 mt-5">
         <p className="text-[20px] font-semibold leading-10">Daily Task</p>
         <TaskCarousel carouselItems={dailyTaskData} taskDone={taskDone} clickDone={clickDone} />
       </div>
+      <AppBar activate="DASHBOARD" />
     </div>
   );
 }

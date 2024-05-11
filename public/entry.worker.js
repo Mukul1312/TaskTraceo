@@ -151,7 +151,7 @@ const routes = {
     index: void 0,
     caseSensitive: void 0,
     hasLoader: true,
-    hasAction: false,
+    hasAction: true,
     hasWorkerLoader: false,
     hasWorkerAction: false,
     module: route2

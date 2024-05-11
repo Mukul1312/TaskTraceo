@@ -8,7 +8,7 @@ export default {
       {
         mytheme: {
           primary: "#34A853",
-          secondary: "#ff00ff",
+          secondary: "#0A2E3C",
           accent: "#00ffff",
           neutral: "#ff00ff",
           "base-100": "#ffffff",
@@ -33,6 +33,10 @@ export default {
       fontFamily: {
         display: "Righteous, sans-serif",
         sans: "Poppins, sans-serif",
+      },
+      dropShadow: {
+        "3xl": "0 35px 35px rgba(0, 0, 0, 0.25)",
+        "4xl": ["0 35px 35px rgba(0, 0, 0, 0.25)", "0 45px 65px rgba(0, 0, 0, 0.15)"],
       },
     },
   },

@@ -9,14 +9,14 @@ export const links: LinksFunction = () => [
   },
 ];
 
-function generatePastelColor() {
-  const hue = Math.floor(Math.random() * 360); // Random hue
-  const saturation = Math.floor(Math.random() * 30) + 70; // Random saturation (70-100)
-  const lightness = Math.floor(Math.random() * 20) + 30; // Random lightness (30-50)
-  const color = "hsl(" + hue + ", " + saturation + "%, " + lightness + "%)";
+// function generatePastelColor() {
+//   const hue = Math.floor(Math.random() * 360); // Random hue
+//   const saturation = Math.floor(Math.random() * 30) + 70; // Random saturation (70-100)
+//   const lightness = Math.floor(Math.random() * 20) + 30; // Random lightness (30-50)
+//   const color = "hsl(" + hue + ", " + saturation + "%, " + lightness + "%)";
 
-  return color;
-}
+//   return color;
+// }
 
 interface TaskDetails {
   taskName: string;
@@ -36,7 +36,7 @@ export const Carousel = ({ carouselItems }: CarouselProps) => {
         <div
           className="carousel-item w-1/2 mr-5 rounded-box"
           key={items.taskName}
-          style={{ backgroundColor: generatePastelColor() }}
+          style={{ backgroundColor: items.themeColor }}
         >
           <div
             className="w-full rounded-box h-[256px] flex flex-col justify-around items-center"
@@ -47,9 +47,11 @@ export const Carousel = ({ carouselItems }: CarouselProps) => {
             </span>
             <span className="text-white text-center text-[16px] font-semibold">{items.taskName}</span>
             <div className="flex flex-col pl-2 w-[90%]">
-              <span className="text-white">Progress</span>
+              <div className="flex flex-row w-full justify-between">
+                <span className="text-white">Progress</span>
+                <span className=" text-white">{items.progressPerc}%</span>
+              </div>
               <progress className="progress w-[90%] progress-base-100" value={items.progressPerc} max="100"></progress>
-              <span className="self-end text-white">{items.progressPerc}%</span>
             </div>
           </div>
         </div>
