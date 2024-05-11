@@ -111,6 +111,7 @@ const assets = [
   "/maskable_icon_x512.png",
   "/screenshot.png",
   "/splash-screenshot.png",
+  "/Sprinkle.svg",
   "/favicon/apple-touch-icon.png",
   "/favicon/browserconfig.xml",
   "/favicon/favicon-16x16.png",
