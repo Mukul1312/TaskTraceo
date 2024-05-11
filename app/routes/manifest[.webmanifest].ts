@@ -34,6 +34,8 @@ export const loader = () => {
           src: "login-screenshot.png",
           sizes: "1440x2960",
           type: "image/png",
+          form_factor: "wide",
+          label: "Login Screen",
         },
         {
           src: "splash-screenshot.png",
