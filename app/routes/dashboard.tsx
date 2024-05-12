@@ -15,7 +15,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   });
 
   const response2 = await User.getUserById(user.id);
-  console.log(response2);
 
   if (!response2) throw new Error("Can't able to load Data");
 
@@ -23,9 +22,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  console.log("dashboard action is running");
   const formData = await request.formData();
-  const name = formData.get("id");
+  const name = formData.get("id"); // TODO: Need to add logic to clicking done.
   console.log(name);
 
   return json("Task Done");
@@ -33,7 +31,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 export default function Dashboard() {
   const loaderData = useLoaderData<typeof loader>();
-  console.log(loaderData);
 
   const urgentTaskList = loaderData.urgentImportantTask.map((task) => {
     return {

@@ -11,7 +11,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
     failureRedirect: "/login",
   });
 
-  console.log("Index Route running");
   await auth.isAuthenticated(request, {
     successRedirect: "/dashboard",
   });

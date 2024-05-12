@@ -18,7 +18,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 type LoaderError = { message: string } | null;
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  console.log(request);
   await auth.isAuthenticated(request, { successRedirect: "/dashboard" });
   const session = await sessionStorage.getSession(request.headers.get("Cookie"));
   const error = session.get(auth.sessionErrorKey) as LoaderError;

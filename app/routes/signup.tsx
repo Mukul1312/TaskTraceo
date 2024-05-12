@@ -15,8 +15,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const password = String(formData.get("password"));
   const name = String(formData.get("name"));
 
-  console.log(name, email, password);
-
   const errors: { email?: string; message?: string } = {};
 
   if (!email.includes("@")) {

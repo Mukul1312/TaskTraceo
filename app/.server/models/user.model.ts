@@ -69,7 +69,7 @@ export type DailyTaskDetails = z.infer<typeof Z_DailyTask> & {
 interface UserModelType extends Model<UserType> {
   getUserById(id: string): Promise<UserTypeWithId | null>;
   getUserByEmail(email: string): Promise<UserTypeWithId | null>;
-  createUser(user: UserType): Promise<UserTypeWithId>;
+  createUser(user: Omit<UserType, "urgentImportantTask" | "dailyTask">): Promise<UserTypeWithId>;
   updateUser(userId: string, user: Partial<UserTypeWithId>): Promise<UserTypeWithId>;
   addUrgentImportantTask(taskDetails: UrgentTaskDetails): Promise<UserTypeWithId>;
   addDailyTask(taskDetails: DailyTaskDetails): Promise<UserTypeWithId>;
@@ -118,7 +118,7 @@ UserSchema.static("getUserByEmail", async function (email: string) {
   return await this.findOne({ email });
 });
 
-UserSchema.static("createUser", async function (user: UserType) {
+UserSchema.static("createUser", async function (user: Omit<UserType, "urgentImportantTask" | "dailyTask">) {
   return this.create(user);
 });
 
@@ -148,8 +148,6 @@ UserSchema.static("addDailyTask", async function (taskDetails: DailyTaskDetails)
   if (!user) throw new Error("User not found");
 
   const taskObj = taskArray[0];
-
-  console.log(taskObj, "Adding Daily Task");
 
   return this.findByIdAndUpdate(userId, { $push: { dailyTask: { ...taskObj } } }, { new: true });
 });

@@ -14,7 +14,6 @@ export const TaskCarousel = ({ carouselItems }: CarouselProps) => {
   const submit = useSubmit();
 
   const handleDone = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
-    console.log(e.currentTarget.id);
     submit(
       { id: e.currentTarget.id },
       {

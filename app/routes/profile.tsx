@@ -20,7 +20,6 @@ export default function Profile() {
   const loaderData = useLoaderData<typeof loader>();
 
   if (!loaderData) return <div>User not found</div>;
-  console.log(loaderData);
 
   const formattedDate = formatDate(new Date()); // Format: Saturday, Feb 20 2024
 
