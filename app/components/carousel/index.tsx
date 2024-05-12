@@ -14,6 +14,7 @@ interface TaskDetails {
   progressPerc: number;
   remaningDays: number;
   themeColor: string;
+  id: string;
 }
 
 interface CarouselProps {

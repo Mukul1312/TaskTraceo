@@ -38,6 +38,7 @@ export default function Dashboard() {
       progressPerc: task.progress,
       remaningDays: task.remainingTime,
       themeColor: task.theme,
+      id: task._id,
     };
   });
 

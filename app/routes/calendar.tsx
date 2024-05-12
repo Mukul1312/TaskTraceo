@@ -1,5 +1,5 @@
 import { ActionFunctionArgs } from "@remix-run/node";
-import { Form, useActionData } from "@remix-run/react";
+import { Form, useActionData, useRouteError } from "@remix-run/react";
 import { sessionStorage } from "~/services/session.server";
 import { User as UserType, auth } from "~/services/auth.server";
 import User from "~/.server/models/user.model";
@@ -18,32 +18,23 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     case "add-priority-task": {
       const progress = Number(formData.get("progress"));
       const remaining = Number(formData.get("remaining"));
+      console.log(progress, remaining);
 
-      if (!progress || !remaining) throw new Error("input values properly");
+      if (remaining == 0) throw new Error("Remaining Days can't be zero.");
 
-      const response = await User.addUrgentImportantTask({
-        id: user.id,
-        urgentImportantTask: [
-          {
-            name: taskname,
-            status: false,
-            progress: progress,
-            remainingTime: remaining,
-            theme: generatePastelColor(),
-          },
-        ],
+      const response = await User.addUrgentImportantTask(user.id, {
+        name: taskname,
+        status: false,
+        progress: progress,
+        remainingTime: remaining,
+        theme: generatePastelColor(),
       });
       return response;
     }
     case "add-daily-task": {
-      const response = await User.addDailyTask({
-        id: user.id,
-        dailyTask: [
-          {
-            name: taskname,
-            status: false,
-          },
-        ],
+      const response = await User.addDailyTask(user.id, {
+        name: taskname,
+        status: false,
       });
       return response;
     }
@@ -103,4 +94,15 @@ export default function Calendar() {
       <AppBar activate="CALENDAR" />
     </div>
   );
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+
+  console.log(error);
+
+  return <h1>Some Error Occur. Please check console</h1>;
+  // When NODE_ENV=production:
+  // error.message = "Unexpected Server Error"
+  // error.stack = undefined
 }

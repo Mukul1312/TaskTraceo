@@ -13,7 +13,20 @@ mongoose
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.log(err));
 
-export const Z_UserSchema = z.object({
+const Z_UrgentImportantTask = z.object({
+  name: z.string(),
+  progress: z.number(),
+  remainingTime: z.number(),
+  theme: z.string(),
+  status: z.boolean(),
+});
+
+const Z_DailyTask = z.object({
+  name: z.string(),
+  status: z.boolean(),
+});
+
+export const Z_BaseUserSchema = z.object({
   name: z.string(),
   email: z.string().email(),
   password: z.string(),
@@ -25,44 +38,36 @@ export const Z_UserSchema = z.object({
   city: z.string(),
   state: z.string(),
   ctry: z.string(),
-  urgentImportantTask: z.array(
-    z.object({
-      name: z.string(),
-      progress: z.number(),
-      remainingTime: z.number(),
-      theme: z.string(),
-      status: z.boolean(),
-    })
-  ),
-  dailyTask: z.array(
-    z.object({
-      name: z.string(),
-      status: z.boolean(),
-    })
-  ),
+});
+
+const Z_UserSchema = Z_BaseUserSchema.extend({
+  urgentImportantTask: Z_UrgentImportantTask.array(),
+  dailyTask: Z_DailyTask.array(),
 });
 
 export const Z_UserSchemaWithId = Z_UserSchema.extend({
   _id: z.string(),
-});
-
-export const Z_UrgentImportantTask = Z_UserSchema.pick({
-  urgentImportantTask: true,
-});
-
-export const Z_DailyTask = Z_UserSchema.pick({
-  dailyTask: true,
+  urgentImportantTask: Z_UrgentImportantTask.extend({
+    _id: z.string(),
+  }).array(),
+  dailyTask: Z_DailyTask.extend({
+    _id: z.string(),
+  }).array(),
 });
 
 export type UserType = z.infer<typeof Z_UserSchema>;
 
 export type UserTypeWithId = z.infer<typeof Z_UserSchemaWithId>;
 
-export type UrgentTaskDetails = z.infer<typeof Z_UrgentImportantTask> & {
+export type UrgentTaskDetails = z.infer<typeof Z_UrgentImportantTask>;
+
+export type UrgentTaskDetailsWithId = z.infer<typeof Z_UrgentImportantTask> & {
   id: string;
 };
 
-export type DailyTaskDetails = z.infer<typeof Z_DailyTask> & {
+export type DailyTaskDetails = z.infer<typeof Z_DailyTask>;
+
+export type DailyTaskDetailsWithId = z.infer<typeof Z_DailyTask> & {
   id: string;
 };
 
@@ -71,8 +76,8 @@ interface UserModelType extends Model<UserType> {
   getUserByEmail(email: string): Promise<UserTypeWithId | null>;
   createUser(user: Omit<UserType, "urgentImportantTask" | "dailyTask">): Promise<UserTypeWithId>;
   updateUser(userId: string, user: Partial<UserTypeWithId>): Promise<UserTypeWithId>;
-  addUrgentImportantTask(taskDetails: UrgentTaskDetails): Promise<UserTypeWithId>;
-  addDailyTask(taskDetails: DailyTaskDetails): Promise<UserTypeWithId>;
+  addUrgentImportantTask(userId: string, taskDetails: UrgentTaskDetails): Promise<UserTypeWithId>;
+  addDailyTask(userId: string, taskDetails: DailyTaskDetails): Promise<UserTypeWithId>;
 }
 
 const SchemaObj = {
@@ -126,30 +131,20 @@ UserSchema.static("updateUser", async function (userId: string, user: Partial<Us
   return this.findByIdAndUpdate(userId, user, { new: true });
 });
 
-UserSchema.static("addUrgentImportantTask", async function (taskDetails: UrgentTaskDetails) {
-  const userId = taskDetails.id;
-  const taskArray = taskDetails.urgentImportantTask;
-
-  if (!userId || taskArray.length == 0) throw new Error("userId or taskArray is empty");
+UserSchema.static("addUrgentImportantTask", async function (userId: string, taskDetails: UrgentTaskDetails) {
+  if (!userId || !Object.keys(taskDetails).length) throw new Error("userId or taskDetails are empty");
   const user = this.findById(userId);
   if (!user) throw new Error("User not found");
 
-  const taskObj = taskArray[0];
-
-  return this.findByIdAndUpdate(userId, { $push: { urgentImportantTask: { ...taskObj } } }, { new: true });
+  return this.findByIdAndUpdate(userId, { $push: { urgentImportantTask: { ...taskDetails } } }, { new: true });
 });
 
-UserSchema.static("addDailyTask", async function (taskDetails: DailyTaskDetails) {
-  const userId = taskDetails.id;
-  const taskArray = taskDetails.dailyTask;
-
-  if (!userId || taskArray.length == 0) throw new Error("userId or taskArray is empty");
+UserSchema.static("addDailyTask", async function (userId: string, taskDetails: DailyTaskDetails) {
+  if (!userId || !Object.keys(taskDetails).length) throw new Error("userId or taskArray is empty");
   const user = this.findById(userId);
   if (!user) throw new Error("User not found");
 
-  const taskObj = taskArray[0];
-
-  return this.findByIdAndUpdate(userId, { $push: { dailyTask: { ...taskObj } } }, { new: true });
+  return this.findByIdAndUpdate(userId, { $push: { dailyTask: { ...taskDetails } } }, { new: true });
 });
 
 const User = connection.model<UserType, UserModelType>("User", UserSchema);
