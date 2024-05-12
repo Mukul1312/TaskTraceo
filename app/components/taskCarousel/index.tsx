@@ -3,6 +3,7 @@ import { useSubmit } from "@remix-run/react";
 interface TaskDetails {
   taskName: string;
   status: boolean;
+  id: string;
 }
 
 interface CarouselProps {
@@ -14,8 +15,15 @@ export const TaskCarousel = ({ carouselItems }: CarouselProps) => {
   const submit = useSubmit();
 
   const handleDone = (e: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
+    const isDone = e.currentTarget.classList.values.toString().includes("fill-secondary") ? false : true;
+
+    const array = e.currentTarget.id.split(",");
+    const id = array[0];
+    const status = array[1].includes("true");
+
+    console.log("From HandleDone", isDone);
     submit(
-      { id: e.currentTarget.id },
+      { id: id, status: !status },
       {
         method: "post",
         action: "/dashboard",
@@ -24,7 +32,7 @@ export const TaskCarousel = ({ carouselItems }: CarouselProps) => {
   };
 
   return (
-    <div className="carousel carousel-vertical rounded-box h-96 w-full">
+    <div className="carousel carousel-vertical rounded-box h-[19rem] w-full">
       {carouselItems.map((task) => (
         <div className="carousel-item px-2 mb-2 h-10" key={task.taskName}>
           <div className="w-full rounded-md flex flex-row justify-between px-3 items-center border-2">
@@ -43,7 +51,7 @@ export const TaskCarousel = ({ carouselItems }: CarouselProps) => {
               strokeWidth={1.5}
               stroke="currentColor"
               className={`w-6 h-6 ${task.status ? "fill-secondary" : "fill-transparent"}`}
-              id={task.taskName}
+              id={`${task.id},${task.status}`}
               onClick={handleDone}
             >
               <path

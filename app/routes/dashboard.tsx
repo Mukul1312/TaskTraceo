@@ -4,7 +4,7 @@ import { Carousel } from "~/components/carousel";
 import { TaskCarousel } from "~/components/taskCarousel";
 import { auth } from "~/services/auth.server";
 import { AppBar } from "~/components/appBar";
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData, useRouteError } from "@remix-run/react";
 import User from "~/.server/models/user.model";
 import formatDate from "~/utils/formatDate";
 
@@ -23,10 +23,17 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
-  const name = formData.get("id"); // TODO: Need to add logic to clicking done.
-  console.log(name);
+  const id = String(formData.get("id")); // TODO: Need to add logic to clicking done.
+  const status = String(formData.get("status"));
 
-  return json("Task Done");
+  // if (status == true) throw new Error("Already Completed this task" + id);
+
+  const user = User.setDailyTaskDone("663fceed015d1c741d6284a9", id, status === "true");
+
+  return json({
+    user: user,
+    message: "Task Done",
+  });
 };
 
 export default function Dashboard() {
@@ -46,6 +53,7 @@ export default function Dashboard() {
     return {
       taskName: task.name,
       status: task.status,
+      id: task._id,
     };
   });
 
@@ -85,4 +93,12 @@ export default function Dashboard() {
       <AppBar activate="DASHBOARD" />
     </div>
   );
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+
+  console.log(error);
+
+  return <h1>Some Error Occur. Please check console</h1>;
 }

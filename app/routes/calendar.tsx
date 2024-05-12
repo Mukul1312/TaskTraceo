@@ -46,7 +46,10 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 export default function Calendar() {
   const actionData = useActionData<typeof action>();
-  console.log(actionData);
+
+  if (actionData) {
+    console.log(actionData);
+  }
   return (
     <div className="pt-5 h-screen overflow-hidden relative">
       <div className="flex flex-col gap-10 justify-start items-center mx-5 h-full">
@@ -102,7 +105,4 @@ export function ErrorBoundary() {
   console.log(error);
 
   return <h1>Some Error Occur. Please check console</h1>;
-  // When NODE_ENV=production:
-  // error.message = "Unexpected Server Error"
-  // error.stack = undefined
 }
