@@ -8,7 +8,6 @@ import { auth } from "~/services/auth.server";
 import { sessionStorage } from "~/services/session.server";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const email = await auth.authenticate("form", request, {
     successRedirect: "/dashboard",
     failureRedirect: "/login",
@@ -19,6 +18,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 type LoaderError = { message: string } | null;
 export const loader = async ({ request }: LoaderFunctionArgs) => {
+  console.log(request);
   await auth.isAuthenticated(request, { successRedirect: "/dashboard" });
   const session = await sessionStorage.getSession(request.headers.get("Cookie"));
   const error = session.get(auth.sessionErrorKey) as LoaderError;

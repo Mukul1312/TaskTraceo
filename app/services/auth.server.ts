@@ -1,10 +1,12 @@
 import { Authenticator, AuthorizationError } from "remix-auth";
 import { FormStrategy } from "remix-auth-form";
-import User from "~/.server/models/user.model";
+import User, { UserType } from "~/.server/models/user.model";
 
 import { sessionStorage } from "~/services/session.server";
 
-export const auth = new Authenticator<string>(sessionStorage);
+export type User = Pick<UserType, "name" | "password" | "email"> & { id: string };
+
+export const auth = new Authenticator<User>(sessionStorage);
 
 auth.use(
   new FormStrategy(async ({ form }) => {
@@ -27,6 +29,11 @@ auth.use(
       throw new Error("Invalid email or password");
     }
 
-    return email as string;
+    return {
+      name: user.name,
+      email: user.email,
+      password: user.password,
+      id: user._id,
+    };
   })
 );

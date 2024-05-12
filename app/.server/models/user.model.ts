@@ -25,22 +25,54 @@ export const Z_UserSchema = z.object({
   city: z.string(),
   state: z.string(),
   ctry: z.string(),
+  urgentImportantTask: z.array(
+    z.object({
+      name: z.string(),
+      progress: z.number(),
+      remainingTime: z.number(),
+      theme: z.string(),
+      status: z.boolean(),
+    })
+  ),
+  dailyTask: z.array(
+    z.object({
+      name: z.string(),
+      status: z.boolean(),
+    })
+  ),
 });
 
 export const Z_UserSchemaWithId = Z_UserSchema.extend({
   _id: z.string(),
 });
 
+export const Z_UrgentImportantTask = Z_UserSchema.pick({
+  urgentImportantTask: true,
+});
+
+export const Z_DailyTask = Z_UserSchema.pick({
+  dailyTask: true,
+});
+
 export type UserType = z.infer<typeof Z_UserSchema>;
 
 export type UserTypeWithId = z.infer<typeof Z_UserSchemaWithId>;
 
+export type UrgentTaskDetails = z.infer<typeof Z_UrgentImportantTask> & {
+  id: string;
+};
+
+export type DailyTaskDetails = z.infer<typeof Z_DailyTask> & {
+  id: string;
+};
+
 interface UserModelType extends Model<UserType> {
-  getAllUser(): Promise<UserTypeWithId[] | null>;
   getUserById(id: string): Promise<UserTypeWithId | null>;
   getUserByEmail(email: string): Promise<UserTypeWithId | null>;
   createUser(user: UserType): Promise<UserTypeWithId>;
   updateUser(userId: string, user: Partial<UserTypeWithId>): Promise<UserTypeWithId>;
+  addUrgentImportantTask(taskDetails: UrgentTaskDetails): Promise<UserTypeWithId>;
+  addDailyTask(taskDetails: DailyTaskDetails): Promise<UserTypeWithId>;
 }
 
 const SchemaObj = {
@@ -55,6 +87,21 @@ const SchemaObj = {
   city: { type: String, required: true },
   state: { type: String, required: true },
   ctry: { type: String, required: true },
+  urgentImportantTask: [
+    {
+      name: String,
+      progress: Number,
+      remainingTime: Number,
+      theme: String,
+      status: Boolean,
+    },
+  ],
+  dailyTask: [
+    {
+      name: String,
+      status: Boolean,
+    },
+  ],
 };
 
 const UserSchema = new Schema<UserType, UserModelType>(SchemaObj);
@@ -77,6 +124,34 @@ UserSchema.static("createUser", async function (user: UserType) {
 
 UserSchema.static("updateUser", async function (userId: string, user: Partial<UserTypeWithId>) {
   return this.findByIdAndUpdate(userId, user, { new: true });
+});
+
+UserSchema.static("addUrgentImportantTask", async function (taskDetails: UrgentTaskDetails) {
+  const userId = taskDetails.id;
+  const taskArray = taskDetails.urgentImportantTask;
+
+  if (!userId || taskArray.length == 0) throw new Error("userId or taskArray is empty");
+  const user = this.findById(userId);
+  if (!user) throw new Error("User not found");
+
+  const taskObj = taskArray[0];
+
+  return this.findByIdAndUpdate(userId, { $push: { urgentImportantTask: { ...taskObj } } }, { new: true });
+});
+
+UserSchema.static("addDailyTask", async function (taskDetails: DailyTaskDetails) {
+  const userId = taskDetails.id;
+  const taskArray = taskDetails.dailyTask;
+
+  if (!userId || taskArray.length == 0) throw new Error("userId or taskArray is empty");
+  const user = this.findById(userId);
+  if (!user) throw new Error("User not found");
+
+  const taskObj = taskArray[0];
+
+  console.log(taskObj, "Adding Daily Task");
+
+  return this.findByIdAndUpdate(userId, { $push: { dailyTask: { ...taskObj } } }, { new: true });
 });
 
 const User = connection.model<UserType, UserModelType>("User", UserSchema);

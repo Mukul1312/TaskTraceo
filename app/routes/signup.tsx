@@ -1,6 +1,6 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form, useActionData, useLoaderData } from "@remix-run/react";
+import { Form, useLoaderData } from "@remix-run/react";
 import User from "~/.server/models/user.model";
 import { InputWithLeadIcon } from "~/components/InputWithLeadIcon";
 import { Logo } from "~/components/logo";
@@ -33,7 +33,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     // manually get the session
     const session = await getSession(request.headers.get("cookie"));
     // and store the user data
-    session.set(auth.sessionKey, getUser);
+    session.set(auth.sessionKey, getUser.email);
 
     return redirect("/dashboard", {
       headers: {
@@ -56,7 +56,15 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     ctry: faker.location.country(),
   });
 
-  return json({ user });
+  const session = await getSession(request.headers.get("cookie"));
+  // and store the user data
+  session.set(auth.sessionKey, user.email);
+
+  return redirect("/dashboard", {
+    headers: {
+      "Set-Cookie": await commitSession(session),
+    },
+  });
 };
 
 type LoaderError = { message: string } | null;
@@ -68,22 +76,22 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 export default function SignUp() {
-  const userData = useActionData<typeof action>();
+  // const userData = useActionData<typeof action>();
   const { error } = useLoaderData<typeof loader>();
   // const navigate = useNavigate();
 
-  let message: string = "";
+  // let message: string = "";
 
-  if (userData && "errors" in userData) {
-    message = userData.errors.email || "";
-  } else if (userData && "user" in userData) {
-    message = `User created ${userData.user.name.toUpperCase()}`;
-  }
+  // if (userData && "errors" in userData) {
+  //   message = userData.errors.email || "";
+  // } else if (userData && "user" in userData) {
+  //   message = `User created ${userData.user.name.toUpperCase()}`;
+  // }
   return (
     <div className="h-screen px-5 w-screen">
       <div className="h-full flex flex-col justify-center items-center gap-10">
         <Form method="post" className="flex flex-col justify-center items-center">
-          {message}
+          {/* {message} */}
           {error ? <div className="text-red-600">{`error.message`}</div> : null}
           <div className="text-center">
             <Logo />
