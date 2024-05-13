@@ -42,6 +42,11 @@ export const loader = () => {
           sizes: "1500x3248",
           type: "image/png",
         },
+        {
+          src: "dashboard-screenshot.png",
+          sizes: "1500x3248",
+          type: "image/png",
+        },
       ],
     } as WebAppManifest,
     {

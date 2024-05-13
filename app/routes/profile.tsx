@@ -26,13 +26,13 @@ export default function Profile() {
   return (
     <div className="pt-5 h-screen overflow-hidden relative">
       <div className="flex flex-row justify-between items-center mx-5">
-        <span className="text-[12px] font-normal">{formattedDate}</span>
+        <span className="text-[12px] font-normal select-none lg:select-auto">{formattedDate}</span>
       </div>
       <div className="mx-5 mt-5">
-        <p className="text-[24px] font-bold">Welcome {loaderData.name}</p>
-        <p className="text-[16px] font-medium text-[#474747]">Have a nice day !</p>
+        <p className="text-[24px] font-bold select-none lg:select-auto">Welcome {loaderData.name}</p>
+        <p className="text-[16px] font-medium text-[#474747] select-none lg:select-auto">Have a nice day !</p>
         <Form method="post" action="/logout">
-          <button className="btn btn-accent">Logout</button>
+          <button className="btn btn-accent select-none">Logout</button>
         </Form>
       </div>
       <AppBar activate="PROFILE" />

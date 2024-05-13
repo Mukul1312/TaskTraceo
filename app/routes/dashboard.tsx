@@ -62,7 +62,7 @@ export default function Dashboard() {
   return (
     <div className="pt-5 h-screen overflow-hidden relative">
       <div className="flex flex-row justify-between items-center mx-5">
-        <span className="text-[12px] font-normal">{formattedDate}</span>
+        <span className="text-[12px] font-normal select-none lg:select-auto">{formattedDate}</span>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -79,15 +79,15 @@ export default function Dashboard() {
         </svg>
       </div>
       <div className="mx-5 mt-5">
-        <p className="text-[24px] font-bold">Welcome {loaderData.name}</p>
-        <p className="text-[16px] font-medium text-[#474747]">Have a nice day !</p>
+        <p className="text-[24px] font-bold select-none lg:select-auto">Welcome {loaderData.name}</p>
+        <p className="text-[16px] font-medium text-[#474747] select-none lg:select-auto">Have a nice day !</p>
       </div>
       <div className="ml-5 mt-5">
-        <p className="text-[20px] font-semibold leading-10">My Priority Task</p>
+        <p className="text-[20px] font-semibold leading-10 select-none lg:select-auto">My Priority Task</p>
         <Carousel carouselItems={urgentTaskList} />
       </div>
       <div className="mx-5 mt-5">
-        <p className="text-[20px] font-semibold leading-10">Daily Task</p>
+        <p className="text-[20px] font-semibold leading-10 select-none lg:select-auto">Daily Task</p>
         <TaskCarousel carouselItems={dailyTaskList} />
       </div>
       <AppBar activate="DASHBOARD" />

@@ -37,7 +37,7 @@ export const TaskCarousel = ({ carouselItems }: CarouselProps) => {
         <div className="carousel-item px-2 mb-2 h-10" key={task.taskName}>
           <div className="w-full rounded-md flex flex-row justify-between px-3 items-center border-2">
             <span
-              className="text-[16px] font-semibold"
+              className="text-[16px] font-semibold select-none lg:select-auto"
               style={{
                 color: task.status ? "green" : "black",
               }}

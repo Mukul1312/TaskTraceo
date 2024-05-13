@@ -11,6 +11,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const intent = formData.get("intent");
   const taskname = String(formData.get("taskname"));
 
+  if (!taskname) throw new Error("Task name can't be empty");
+
   const session = await sessionStorage.getSession(request.headers.get("Cookie"));
   const user: UserType = session.get(auth.sessionKey);
 
@@ -54,7 +56,7 @@ export default function Calendar() {
     <div className="pt-5 h-screen overflow-hidden relative">
       <div className="flex flex-col gap-10 justify-start items-center mx-5 h-full">
         <div className="flex flex-col gap-6 mt-10 ">
-          <span className="text-center font-bold text-[20px]">Create Priority Task</span>
+          <span className="text-center font-bold text-[20px] select-none lg:select-auto">Create Priority Task</span>
           <Form className="flex flex-col gap-4" method="POST" action="/calendar">
             <input
               type="text"
@@ -74,13 +76,13 @@ export default function Calendar() {
               placeholder="Remaining Days"
               className="input input-bordered w-full max-w-xs"
             />
-            <button name="intent" value="add-priority-task" className="btn btn-primary text-white">
+            <button name="intent" value="add-priority-task" className="btn btn-primary text-white select-none">
               Save
             </button>
           </Form>
         </div>
         <div className="flex flex-col gap-6 mt-10 ">
-          <span className="text-center font-bold text-[20px]">Create Daily Task</span>
+          <span className="text-center font-bold text-[20px] select-none lg:select-auto">Create Daily Task</span>
           <Form className="flex flex-col gap-4" method="POST" action="/calendar">
             <input
               type="text"
@@ -88,7 +90,7 @@ export default function Calendar() {
               placeholder="Task Name"
               className="input input-bordered w-full max-w-xs"
             />
-            <button name="intent" value="add-daily-task" className="btn btn-primary text-white">
+            <button name="intent" value="add-daily-task" className="btn btn-primary text-white select-none">
               Save
             </button>
           </Form>

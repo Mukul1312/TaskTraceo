@@ -157,6 +157,7 @@ const route8 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
 const assets = [
   "/android-chrome-192x192.png",
   "/android-chrome-512x512.png",
+  "/dashboard-screenshot.png",
   "/entry.worker.js",
   "/favicon.ico",
   "/login-down-icon.svg",

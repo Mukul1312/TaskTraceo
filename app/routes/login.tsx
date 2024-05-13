@@ -31,12 +31,14 @@ export default function Screen() {
     <div className="h-screen px-5 w-screen">
       <div className="h-full flex flex-col justify-center items-center gap-10">
         <Form method="post" className="flex flex-col justify-center items-center">
-          {error ? <div className="text-red-600">{error.message}</div> : null}
+          {error ? <div className="text-red-600 select-none lg:select-auto">{error.message}</div> : null}
           <div className="text-center">
             <Logo />
           </div>
           <div className="flex flex-col gap-5 w-full">
-            <p className="text-[#474747] font-medium text-[14px] text-center">Login to your account</p>
+            <p className="text-[#474747] font-medium text-[14px] text-center select-none lg:select-auto">
+              Login to your account
+            </p>
             <div className="flex flex-col gap-5 w-full">
               <InputWithLeadIcon
                 inputName="email"
@@ -74,11 +76,11 @@ export default function Screen() {
                 }
               />
             </div>
-            <span className="text-black self-end">Forgot password?</span>
-            <button className="bg-secondary py-3 text-white rounded-lg ">Log In</button>
+            <span className="text-black self-end select-none lg:select-auto">Forgot password?</span>
+            <button className="bg-secondary py-3 text-white rounded-lg select-none lg:select-auto">Log In</button>
           </div>
         </Form>
-        <div className="">
+        <div className="select-none lg:select-auto">
           <span>Don&apos;t have an account?</span>
           <Link to="/signup" className="text-secondary">
             Sign up

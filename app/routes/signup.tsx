@@ -90,12 +90,14 @@ export default function SignUp() {
       <div className="h-full flex flex-col justify-center items-center gap-10">
         <Form method="post" className="flex flex-col justify-center items-center">
           {/* {message} */}
-          {error ? <div className="text-red-600">{`error.message`}</div> : null}
+          {error ? <div className="text-red-600 select-none lg:select-auto">{`error.message`}</div> : null}
           <div className="text-center">
             <Logo />
           </div>
           <div className="flex flex-col gap-5 w-full">
-            <p className="text-[#474747] font-medium text-[14px] text-center">Create your account</p>
+            <p className="text-[#474747] font-medium text-[14px] text-center select-none lg:select-auto">
+              Create your account
+            </p>
             <div className="flex flex-col gap-5 w-full">
               <InputWithLeadIcon
                 inputName="name"
@@ -156,7 +158,7 @@ export default function SignUp() {
                 }
               />
             </div>
-            <button className="bg-secondary py-3 text-white rounded-lg ">Register</button>
+            <button className="bg-secondary py-3 text-white rounded-lg select-none lg:select-auto">Register</button>
           </div>
         </Form>
       </div>
