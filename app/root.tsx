@@ -3,6 +3,7 @@ import type { LinksFunction } from "@remix-run/node";
 import { ManifestLink } from "@remix-pwa/sw";
 
 import styles from "./tailwind.css?url";
+// import { useShouldHydrate } from "remix-utils/use-should-hydrate";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: styles },
@@ -19,6 +20,8 @@ export const links: LinksFunction = () => [
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  // let shouldHydrate = useShouldHydrate();
+
   return (
     <html lang="en">
       <head>
@@ -32,6 +35,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {children}
         <ScrollRestoration />
         <Scripts />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/datepicker.min.js"></script>
       </body>
     </html>
   );

@@ -1,8 +1,15 @@
 import type { Config } from "tailwindcss";
 import daisyui from "daisyui";
+import flowbite from "flowbite/plugin";
 
 export default {
-  content: ["./app/**/*.{js,jsx,ts,tsx}"],
+  content: [
+    "./app/**/*.{js,jsx,ts,tsx}",
+    "./node_modules/flowbite-react/lib/**/*.js",
+    "./node_modules/tailwind-datepicker-react/dist/**/*.js",
+    "./app/**/*.{js,jsx,ts,tsx}",
+    "./public/**/*.html",
+  ],
   daisyui: {
     themes: [
       {
@@ -40,5 +47,5 @@ export default {
       },
     },
   },
-  plugins: [daisyui],
+  plugins: [daisyui, flowbite],
 } satisfies Config;
