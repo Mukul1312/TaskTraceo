@@ -16,9 +16,10 @@ mongoose
 const Z_UrgentImportantTask = z.object({
   name: z.string(),
   progress: z.number(),
-  remainingTime: z.number(),
+  remainingTime: z.string(),
   theme: z.string(),
   status: z.boolean(),
+  time: z.string(),
 });
 
 const Z_DailyTask = z.object({
@@ -87,9 +88,10 @@ interface DailyTaskModelType extends Model<DailyTaskType> {}
 const UrgentTaskSchemaObj = new Schema<UrgentTaskType, UrgentTaskModelType>({
   name: { type: String, required: true },
   progress: { type: Number, required: true },
-  remainingTime: { type: Number, required: true },
+  remainingTime: { type: String, required: true },
   theme: { type: String, required: true },
   status: { type: Boolean, required: true },
+  time: { type: String, required: true },
 });
 
 const DailyTaskSchemaObj = new Schema<DailyTaskType, DailyTaskModelType>({
