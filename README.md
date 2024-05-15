@@ -7,7 +7,7 @@
 Run the Vite dev server:
 
 ```shellscript
-npm run dev
+yarn run dev
 ```
 
 ## Deployment
