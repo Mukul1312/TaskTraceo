@@ -12,7 +12,7 @@ export const links: LinksFunction = () => [
 interface TaskDetails {
   taskName: string;
   progressPerc: number;
-  remaningDays: number;
+  remaningDays: string;
   themeColor: string;
   id: string;
 }

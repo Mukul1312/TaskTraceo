@@ -1,6 +1,6 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form, useLoaderData } from "@remix-run/react";
+import { Form, isRouteErrorResponse, useLoaderData, useRouteError } from "@remix-run/react";
 import User from "~/.server/models/user.model";
 import { InputWithLeadIcon } from "~/components/InputWithLeadIcon";
 import { Logo } from "~/components/logo";
@@ -27,11 +27,15 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   const getUser = await User.getUserByEmail(email);
 
+  console.log("SIGNUP ACTION: User", getUser);
+  // True, If user already exist in database
   if (getUser) {
     // manually get the session
     const session = await getSession(request.headers.get("cookie"));
+    console.log("SIGNUP ACTION: SESSION", session);
     // and store the user data
     session.set(auth.sessionKey, getUser.email);
+    console.log("SIGNUP ACTION: After Session Set", session);
 
     return redirect("/dashboard", {
       headers: {
@@ -40,6 +44,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     });
   }
 
+  // Create new user.
   const user = await User.createUser({
     email: email,
     name: name,
@@ -56,7 +61,12 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   const session = await getSession(request.headers.get("cookie"));
   // and store the user data
-  session.set(auth.sessionKey, user.email);
+  session.set(auth.sessionKey, {
+    name: user.name,
+    email: user.email,
+    password: user.password,
+    id: user._id,
+  });
 
   return redirect("/dashboard", {
     headers: {
@@ -67,8 +77,11 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 type LoaderError = { message: string } | null;
 export const loader = async ({ request }: LoaderFunctionArgs) => {
+  console.log("SIGNUP LOADER:", request);
   await auth.isAuthenticated(request, { successRedirect: "/dashboard" });
+
   const session = await sessionStorage.getSession(request.headers.get("Cookie"));
+  console.log("SIGNUP LOADER: SESSION", session);
   const error = session.get(auth.sessionErrorKey) as LoaderError;
   return json({ error });
 };
@@ -164,4 +177,35 @@ export default function SignUp() {
       </div>
     </div>
   );
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+
+  if (isRouteErrorResponse(error)) {
+    console.log("SIGNUP ERROR: ROUTE RESPONSE ERROR", error);
+    return (
+      <div>
+        <h1>
+          {error.status} {error.statusText}
+        </h1>
+        <p>{error.data}</p>
+      </div>
+    );
+  } else if (error instanceof Error) {
+    console.log("SIGNUP ERROR: Error Instance", error);
+
+    return (
+      <div>
+        <h1>Error</h1>
+        <p>{error.message}</p>
+        <p>The stack trace is:</p>
+        <pre>{error.stack}</pre>
+      </div>
+    );
+  } else {
+    console.log("SIGNUP ERROR: Unknown Error", error);
+
+    return <h1>Unknown Error</h1>;
+  }
 }

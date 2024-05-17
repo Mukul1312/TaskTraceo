@@ -4,17 +4,21 @@ import { Carousel } from "~/components/carousel";
 import { TaskCarousel } from "~/components/taskCarousel";
 import { auth } from "~/services/auth.server";
 import { AppBar } from "~/components/appBar";
-import { useLoaderData, useRouteError } from "@remix-run/react";
+import { isRouteErrorResponse, useLoaderData, useRouteError } from "@remix-run/react";
 import User from "~/.server/models/user.model";
 import formatDate from "~/utils/formatDate";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  console.log("DASHBOARD: LOADER: RUNNING");
   const user = await auth.isAuthenticated(request, {
     failureRedirect: "/login",
   });
 
+  console.log("DASHBOARD: LOADER: USER", user);
+
   const response2 = await User.getUserById(user.id);
+
+  console.log("DASHBOARD: LOADER: GET RESPOSNE", response2);
 
   if (!response2) throw new Error("Can't able to load Data");
 
@@ -84,11 +88,11 @@ export default function Dashboard() {
       </div>
       <div className="ml-5 mt-5">
         <p className="text-[20px] font-semibold leading-10 select-none lg:select-auto">My Priority Task</p>
-        <Carousel carouselItems={urgentTaskList} />
+        {urgentTaskList.length ? <Carousel carouselItems={urgentTaskList} /> : <NewTaskText />}
       </div>
       <div className="mx-5 mt-5">
         <p className="text-[20px] font-semibold leading-10 select-none lg:select-auto">Daily Task</p>
-        <TaskCarousel carouselItems={dailyTaskList} />
+        {urgentTaskList.length ? <TaskCarousel carouselItems={dailyTaskList} /> : <NewTaskText />}
       </div>
       <AppBar activate="DASHBOARD" />
     </div>
@@ -98,7 +102,49 @@ export default function Dashboard() {
 export function ErrorBoundary() {
   const error = useRouteError();
 
-  console.log(error);
+  if (isRouteErrorResponse(error)) {
+    console.log("DASHBOARD: ERROR: ROUTE RESPONSE ERROR", error);
+    return (
+      <div>
+        <h1>
+          {error.status} {error.statusText}
+        </h1>
+        <p>{error.data}</p>
+      </div>
+    );
+  } else if (error instanceof Error) {
+    console.log("DASHBOARD: ERROR: Error Instance", error);
 
-  return <h1>Some Error Occur. Please check console</h1>;
+    return (
+      <div>
+        <h1>Error</h1>
+        <p>{error.message}</p>
+        <p>The stack trace is:</p>
+        <pre>{error.stack}</pre>
+      </div>
+    );
+  } else {
+    console.log("DASHBOARD: ERROR: Unknown Error", error);
+
+    return <h1>Unknown Error</h1>;
+  }
+}
+
+function NewTaskText() {
+  return (
+    <span className="flex gap-2">
+      No Task Found. Click{" "}
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth={1.5}
+        stroke="currentColor"
+        className={`w-6 h-6`}
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+      </svg>{" "}
+      to create new task.
+    </span>
+  );
 }
