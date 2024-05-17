@@ -60,27 +60,64 @@ export default function Calendar() {
         <div className="flex flex-col gap-6 mt-10 ">
           <span className="text-center font-bold text-[20px] select-none lg:select-auto">Create Priority Task</span>
           <Form className="flex flex-col gap-4" method="POST" action="/calendar">
-            <input
-              type="text"
-              name="taskname"
-              placeholder="Task Name"
-              className="input input-bordered w-full max-w-xs"
-            />
-            <input
-              type="number"
-              name="progress"
-              placeholder="Progress Percentage"
-              className="input input-bordered w-full max-w-xs"
-            />
-            <input type="date" id="start" name="dead-date" placeholder="CompletionDate" />
-            <input
-              type="time"
-              id="time"
-              className="input input-bordered w-full max-w-xs"
-              defaultValue="00:00"
-              required
-              name="time"
-            />
+            {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+            <div className="grid gap-6 mb-6 md:grid-cols-2"></div>
+            <div>
+              <label htmlFor="first_name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                Task Name
+              </label>
+              <input
+                type="text"
+                id="first_name"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="UI Design"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="first_name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                Progress %
+              </label>
+              <input
+                type="number"
+                name="progress"
+                id="first_name"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="78"
+                defaultValue={78}
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="start" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                Deadline Date
+              </label>
+
+              <input
+                type="date"
+                id="start"
+                name="dead-date"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="19/05/2024"
+                required
+              />
+            </div>
+
+            <div>
+              <label htmlFor="start" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                Deadline Time
+              </label>
+
+              <input
+                type="time"
+                id="time"
+                name="time"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                defaultValue="00:00"
+                required
+              />
+            </div>
+
             <button name="intent" value="add-priority-task" className="btn btn-primary text-white select-none">
               Save
             </button>
@@ -89,12 +126,18 @@ export default function Calendar() {
         <div className="flex flex-col gap-6 mt-10 ">
           <span className="text-center font-bold text-[20px] select-none lg:select-auto">Create Daily Task</span>
           <Form className="flex flex-col gap-4" method="POST" action="/calendar">
-            <input
-              type="text"
-              name="taskname"
-              placeholder="Task Name"
-              className="input input-bordered w-full max-w-xs"
-            />
+            <div>
+              <label htmlFor="first_name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                Task Name
+              </label>
+              <input
+                type="text"
+                id="first_name"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="Workout"
+                required
+              />
+            </div>
             <button name="intent" value="add-daily-task" className="btn btn-primary text-white select-none">
               Save
             </button>
