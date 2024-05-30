@@ -26,6 +26,7 @@ export type DailyTaskTypeWithId = z.infer<typeof Z_DailyTask> & {
 };
 
 interface DailyTaskModelType extends Model<DailyTaskType> {
+  getAllDailyTask(userId: string): Promise<DailyTaskTypeWithId[] | null>;
   addDailyTask(userId: string, taskDetails: DailyTaskType): Promise<DailyTaskTypeWithId>;
   setDailyTaskDone(userId: string, taskId: string, status: boolean): Promise<DailyTaskTypeWithId>;
 }
@@ -34,6 +35,11 @@ const DailyTaskSchemaObj = new Schema<DailyTaskType, DailyTaskModelType>({
   name: { type: String, required: true },
   status: { type: Boolean, required: true },
   user: { type: Schema.Types.ObjectId, ref: "User" },
+});
+
+DailyTaskSchemaObj.static("getAllDailyTask", async function (userId: string) {
+  console.log("MODEL: DAILY TASK: GetAllDailyTask", userId);
+  return await this.find({ user: userId });
 });
 
 DailyTaskSchemaObj.static("addDailyTask", async function (userId: string, taskDetails: DailyTaskType) {

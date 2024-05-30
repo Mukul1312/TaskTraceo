@@ -30,6 +30,7 @@ export type UrgentTaskTypeWithId = z.infer<typeof Z_UrgentImportantTask> & {
 };
 
 interface UrgentTaskModelType extends Model<UrgentTaskType> {
+  getAllUrgentTask(userId: string): Promise<UrgentTaskTypeWithId[] | null>;
   addUrgentImportantTask(userId: string, taskDetails: UrgentTaskType): Promise<UrgentTaskTypeWithId>;
 }
 
@@ -41,6 +42,11 @@ const UrgentTaskSchemaObj = new Schema<UrgentTaskType, UrgentTaskModelType>({
   status: { type: Boolean, required: true },
   time: { type: String, required: true },
   user: { type: Schema.Types.ObjectId, ref: "User" },
+});
+
+UrgentTaskSchemaObj.static("getAllUrgentTask", async function (userId: string) {
+  console.log("MODEL: URGENT TASK: GetAllUrgentTask", userId);
+  return await this.find({ user: userId });
 });
 
 UrgentTaskSchemaObj.static("addUrgentImportantTask", async function (userId: string, taskDetails: UrgentTaskType) {

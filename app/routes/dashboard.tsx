@@ -7,6 +7,9 @@ import { AppBar } from "~/components/appBar";
 import { isRouteErrorResponse, useLoaderData, useRouteError } from "@remix-run/react";
 import User from "~/.server/models/user.model";
 import formatDate from "~/utils/formatDate";
+import DailyTask from "~/.server/models/dailyTask.model";
+import UrgentTask from "~/.server/models/urgentTask.model";
+import { object } from "zod";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   console.log("DASHBOARD: LOADER: RUNNING");
@@ -16,13 +19,15 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
   console.log("DASHBOARD: LOADER: USER", user);
 
-  const response2 = await User.getUserById(user.id);
+  const dailyTaskList = await DailyTask.getAllDailyTask(user.id);
+  const urgentTaskList = await UrgentTask.getAllUrgentTask(user.id);
 
-  console.log("DASHBOARD: LOADER: GET RESPOSNE", response2);
+  const response = { dailyTaskList, urgentTaskList };
+  console.log("DASHBOARD: LOADER: GET RESPOSNE", response);
 
-  if (!response2) throw new Error("Can't able to load Data");
+  if (!response.dailyTaskList && !response.urgentTaskList) throw new Error("Can't able to load Data");
 
-  return json(response2);
+  return json(response);
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
