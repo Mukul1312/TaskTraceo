@@ -1,4 +1,5 @@
 import type { LinksFunction } from "@remix-run/node";
+import { useNavigate } from "@remix-run/react";
 
 export const links: LinksFunction = () => [
   {
@@ -22,13 +23,15 @@ interface CarouselProps {
 }
 
 export const Carousel = ({ carouselItems }: CarouselProps) => {
+  const navigate = useNavigate();
   return (
     <div className="carousel rounded-box w-96">
       {carouselItems.map((items) => (
         <div
           className="carousel-item w-1/2 mr-5 rounded-box"
           key={items.taskName}
-          style={{ backgroundColor: items.themeColor }}
+          style={{ backgroundColor: items.themeColor, cursor: "pointer" }}
+          onClick={() => navigate(`/task/${items.id}`)}
         >
           <div
             className="w-full rounded-box h-[256px] flex flex-col justify-around items-center"

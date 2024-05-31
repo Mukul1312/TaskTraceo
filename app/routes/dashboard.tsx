@@ -4,7 +4,7 @@ import { Carousel } from "~/components/carousel";
 import { TaskCarousel } from "~/components/taskCarousel";
 import { auth, User as UserType } from "~/services/auth.server";
 import { AppBar } from "~/components/appBar";
-import { isRouteErrorResponse, useLoaderData, useRouteError } from "@remix-run/react";
+import { isRouteErrorResponse, useLoaderData, useNavigate, useRouteError } from "@remix-run/react";
 import User from "~/.server/models/user.model";
 import formatDate from "~/utils/formatDate";
 import DailyTask from "~/.server/models/dailyTask.model";
@@ -76,8 +76,6 @@ export default function Dashboard() {
   });
 
   console.log(urgentTaskList, dailyTaskList);
-
-  dailyTaskList.length ? console.log("EXIST") : console.log("NOT EXIST");
 
   const formattedDate = formatDate(new Date()); // Format: Saturday, Feb 20 2024
 

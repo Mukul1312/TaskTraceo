@@ -32,7 +32,9 @@ export type UrgentTaskTypeWithId = z.infer<typeof Z_UrgentImportantTask> & {
 
 interface UrgentTaskModelType extends Model<UrgentTaskType> {
   getAllUrgentTask(userId: string): Promise<UrgentTaskTypeWithId[] | null>;
+  getTaskById(taskId: string): Promise<UrgentTaskTypeWithId | null>;
   addUrgentImportantTask(userId: string, taskDetails: UrgentTaskType): Promise<UrgentTaskTypeWithId>;
+  updateTask(taskId: string, taskDetails: Partial<UrgentTaskType>): Promise<UrgentTaskTypeWithId>;
 }
 
 const UrgentTaskSchemaObj = new Schema<UrgentTaskType, UrgentTaskModelType>({
@@ -51,12 +53,22 @@ UrgentTaskSchemaObj.static("getAllUrgentTask", async function (userId: string) {
   return await this.find({ user: userId });
 });
 
+UrgentTaskSchemaObj.static("getTaskById", async function (taskId: string) {
+  return await this.findById(taskId);
+});
+
 UrgentTaskSchemaObj.static("addUrgentImportantTask", async function (userId: string, taskDetails: UrgentTaskType) {
   if (!userId || !Object.keys(taskDetails).length) throw new Error("userId or taskDetails are empty");
   const user = User.findById(userId);
   if (!user) throw new Error("User not found");
 
   return this.create(taskDetails);
+});
+
+UrgentTaskSchemaObj.static("updateTask", async function (taskId: string, taskDetails: Partial<UrgentTaskType>) {
+  if (!taskId) throw new Error("Task id not provided");
+
+  return this.findOneAndUpdate({ _id: taskId }, taskDetails, { new: true });
 });
 
 const UrgentTask = connection.model<UrgentTaskType, UrgentTaskModelType>("UrgentTask", UrgentTaskSchemaObj);
