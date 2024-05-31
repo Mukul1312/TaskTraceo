@@ -2,9 +2,10 @@ import { ActionFunctionArgs, LinksFunction } from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
 import { sessionStorage } from "~/services/session.server";
 import { User as UserType, auth } from "~/services/auth.server";
-import User from "~/.server/models/user.model";
 import { AppBar } from "~/components/appBar";
 import generatePastelColor from "~/utils/genPastelColor";
+import UrgentTask from "~/.server/models/urgentTask.model";
+import DailyTask from "~/.server/models/dailyTask.model";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: "https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css?url" },
@@ -25,20 +26,22 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       const progress = Number(formData.get("progress"));
       const remaining = String(formData.get("dead-date"));
       const time = String(formData.get("time"));
-      const response = await User.addUrgentImportantTask(user.id, {
+      const response = await UrgentTask.addUrgentImportantTask(user.id, {
         name: taskname,
         status: false,
         progress: progress,
         remainingTime: remaining,
         theme: generatePastelColor(),
         time: time,
+        user: user.id,
       });
       return response;
     }
     case "add-daily-task": {
-      const response = await User.addDailyTask(user.id, {
+      const response = await DailyTask.addDailyTask(user.id, {
         name: taskname,
         status: false,
+        user: user.id,
       });
       return response;
     }
@@ -66,6 +69,7 @@ export default function Calendar() {
               </label>
               <input
                 type="text"
+                name="taskname"
                 id="first_name"
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="UI Design"
@@ -134,6 +138,7 @@ export default function Calendar() {
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="Workout"
                 required
+                name="taskname"
               />
             </div>
             <button name="intent" value="add-daily-task" className="btn btn-primary text-white select-none">

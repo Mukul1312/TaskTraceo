@@ -1,5 +1,6 @@
 import mongoose, { Model, Schema, Types } from "mongoose";
 import { z } from "zod";
+import User from "./user.model";
 
 const DB_URI = process.env.DB_CONNECT;
 
@@ -16,13 +17,13 @@ mongoose
 const Z_DailyTask = z.object({
   name: z.string(),
   status: z.boolean(),
-  user: z.instanceof(mongoose.Types.ObjectId),
+  user: z.string(),
 });
 
 export type DailyTaskType = z.infer<typeof Z_DailyTask>;
 
 export type DailyTaskTypeWithId = z.infer<typeof Z_DailyTask> & {
-  id: string;
+  _id: string;
 };
 
 interface DailyTaskModelType extends Model<DailyTaskType> {
@@ -34,6 +35,7 @@ interface DailyTaskModelType extends Model<DailyTaskType> {
 const DailyTaskSchemaObj = new Schema<DailyTaskType, DailyTaskModelType>({
   name: { type: String, required: true },
   status: { type: Boolean, required: true },
+  //@ts-ignore
   user: { type: Schema.Types.ObjectId, ref: "User" },
 });
 
@@ -43,26 +45,25 @@ DailyTaskSchemaObj.static("getAllDailyTask", async function (userId: string) {
 });
 
 DailyTaskSchemaObj.static("addDailyTask", async function (userId: string, taskDetails: DailyTaskType) {
-  // if (!userId || !Object.keys(taskDetails).length) throw new Error("userId or taskArray is empty");
-  // const user = this.findById(userId);
-  // if (!user) throw new Error("User not found");
+  if (!userId || !Object.keys(taskDetails).length) throw new Error("userId or taskArray is empty");
+  const user = User.findById(userId);
+  if (!user) throw new Error("User not found");
 
-  // return this.findByIdAndUpdate(userId, { $push: { dailyTask: { ...taskDetails } } }, { new: true });
-  return "Daily Task added";
+  return this.create(taskDetails);
 });
 
 DailyTaskSchemaObj.static("setDailyTaskDone", async function (userId: string, taskId: string, status: boolean) {
-  // if (!userId || !taskId) throw new Error("user id or task id not obtained");
+  console.log("MODEL: DAILY TASK: setDailyTaskDone", userId, taskId);
+  if (!userId || !taskId) throw new Error("user id or task id not obtained");
 
-  // const user = this.findById(userId);
-  // if (!user) throw new Error("User not found");
+  const user = User.findById(userId);
+  if (!user) throw new Error("User not found");
 
-  // return this.findOneAndUpdate(
-  //   { _id: userId, "dailyTask._id": taskId },
-  //   { $set: { "dailyTask.$.status": status } },
-  //   { new: true }
-  // );
-  return "Daily Task updated";
+  const task = this.findById(taskId);
+  if (!task) throw new Error("Task not found");
+  console.log("MODEL: DAILY TASK: setDailyTaskDone: user & task", user, task);
+
+  return this.findOneAndUpdate({ _id: taskId }, { status: status }, { new: true });
 });
 
 const DailyTask = connection.model<DailyTaskType, DailyTaskModelType>("DailyTask", DailyTaskSchemaObj);

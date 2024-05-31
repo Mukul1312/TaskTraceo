@@ -1,5 +1,6 @@
 import mongoose, { Model, Schema } from "mongoose";
 import { z } from "zod";
+import User from "./user.model";
 
 const DB_URI = process.env.DB_CONNECT;
 
@@ -20,13 +21,13 @@ const Z_UrgentImportantTask = z.object({
   theme: z.string(),
   status: z.boolean(),
   time: z.string(),
-  user: z.instanceof(mongoose.Types.ObjectId),
+  user: z.string(),
 });
 
 export type UrgentTaskType = z.infer<typeof Z_UrgentImportantTask>;
 
 export type UrgentTaskTypeWithId = z.infer<typeof Z_UrgentImportantTask> & {
-  id: string;
+  _id: string;
 };
 
 interface UrgentTaskModelType extends Model<UrgentTaskType> {
@@ -41,6 +42,7 @@ const UrgentTaskSchemaObj = new Schema<UrgentTaskType, UrgentTaskModelType>({
   theme: { type: String, required: true },
   status: { type: Boolean, required: true },
   time: { type: String, required: true },
+  // @ts-ignore
   user: { type: Schema.Types.ObjectId, ref: "User" },
 });
 
@@ -50,13 +52,11 @@ UrgentTaskSchemaObj.static("getAllUrgentTask", async function (userId: string) {
 });
 
 UrgentTaskSchemaObj.static("addUrgentImportantTask", async function (userId: string, taskDetails: UrgentTaskType) {
-  // if (!userId || !Object.keys(taskDetails).length) throw new Error("userId or taskDetails are empty");
-  // const user = this.findById(userId);
-  // if (!user) throw new Error("User not found");
+  if (!userId || !Object.keys(taskDetails).length) throw new Error("userId or taskDetails are empty");
+  const user = User.findById(userId);
+  if (!user) throw new Error("User not found");
 
-  // return this.findByIdAndUpdate(userId, { $push: { urgentImportantTask: { ...taskDetails } } }, { new: true });
-
-  return "Urgent Task added";
+  return this.create(taskDetails);
 });
 
 const UrgentTask = connection.model<UrgentTaskType, UrgentTaskModelType>("UrgentTask", UrgentTaskSchemaObj);

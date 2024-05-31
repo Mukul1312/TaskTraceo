@@ -11,6 +11,7 @@ interface CarouselProps {
 }
 
 export const TaskCarousel = ({ carouselItems }: CarouselProps) => {
+  console.log("TASK CAROUSEL");
   // const fetcher = useFetcher();
   const submit = useSubmit();
 

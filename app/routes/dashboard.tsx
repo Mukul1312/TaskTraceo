@@ -2,13 +2,14 @@ import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Carousel } from "~/components/carousel";
 import { TaskCarousel } from "~/components/taskCarousel";
-import { auth } from "~/services/auth.server";
+import { auth, User as UserType } from "~/services/auth.server";
 import { AppBar } from "~/components/appBar";
 import { isRouteErrorResponse, useLoaderData, useRouteError } from "@remix-run/react";
 import User from "~/.server/models/user.model";
 import formatDate from "~/utils/formatDate";
 import DailyTask from "~/.server/models/dailyTask.model";
 import UrgentTask from "~/.server/models/urgentTask.model";
+import { sessionStorage } from "~/services/session.server";
 import { object } from "zod";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
@@ -22,12 +23,17 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const dailyTaskList = await DailyTask.getAllDailyTask(user.id);
   const urgentTaskList = await UrgentTask.getAllUrgentTask(user.id);
 
-  const response = { dailyTaskList, urgentTaskList };
-  console.log("DASHBOARD: LOADER: GET RESPOSNE", response);
+  console.log("DASHBOARD: LOADER: GET RESPOSNE", dailyTaskList, urgentTaskList);
 
-  if (!response.dailyTaskList && !response.urgentTaskList) throw new Error("Can't able to load Data");
+  if (!(dailyTaskList && urgentTaskList)) {
+    throw new Error("Can't able to load Data");
+  }
 
-  return json(response);
+  return json({
+    user: user,
+    dailyTask: dailyTaskList,
+    urgentImportantTask: urgentTaskList,
+  });
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -35,12 +41,15 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const id = String(formData.get("id")); // TODO: Need to add logic to clicking done.
   const status = String(formData.get("status"));
 
+  const session = await sessionStorage.getSession(request.headers.get("Cookie"));
+  const user: UserType = session.get(auth.sessionKey);
+
   // if (status == true) throw new Error("Already Completed this task" + id);
 
-  const user = User.setDailyTaskDone("663fceed015d1c741d6284a9", id, status === "true");
+  const task = DailyTask.setDailyTaskDone(user.id, id, status === "true");
 
   return json({
-    user: user,
+    user: task,
     message: "Task Done",
   });
 };
@@ -66,6 +75,10 @@ export default function Dashboard() {
     };
   });
 
+  console.log(urgentTaskList, dailyTaskList);
+
+  dailyTaskList.length ? console.log("EXIST") : console.log("NOT EXIST");
+
   const formattedDate = formatDate(new Date()); // Format: Saturday, Feb 20 2024
 
   return (
@@ -88,7 +101,7 @@ export default function Dashboard() {
         </svg>
       </div>
       <div className="mx-5 mt-5">
-        <p className="text-[24px] font-bold select-none lg:select-auto">Welcome {loaderData.name}</p>
+        <p className="text-[24px] font-bold select-none lg:select-auto">Welcome {loaderData.user.name}</p>
         <p className="text-[16px] font-medium text-[#474747] select-none lg:select-auto">Have a nice day !</p>
       </div>
       <div className="ml-5 mt-5">
@@ -97,7 +110,7 @@ export default function Dashboard() {
       </div>
       <div className="mx-5 mt-5">
         <p className="text-[20px] font-semibold leading-10 select-none lg:select-auto">Daily Task</p>
-        {urgentTaskList.length ? <TaskCarousel carouselItems={dailyTaskList} /> : <NewTaskText />}
+        {dailyTaskList.length ? <TaskCarousel carouselItems={dailyTaskList} /> : <NewTaskText />}
       </div>
       <AppBar activate="DASHBOARD" />
     </div>
