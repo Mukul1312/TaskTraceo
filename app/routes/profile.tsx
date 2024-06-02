@@ -24,7 +24,7 @@ export default function Profile() {
   const formattedDate = formatDate(new Date()); // Format: Saturday, Feb 20 2024
 
   return (
-    <div className="pt-5 h-screen overflow-hidden relative">
+    <div className="pt-5 h-screen overflow relative">
       <div className="flex flex-row justify-between items-center mx-5">
         <span className="text-[12px] font-normal select-none lg:select-auto">{formattedDate}</span>
       </div>

@@ -155,7 +155,7 @@ export default function Task() {
   };
 
   return (
-    <div className="h-screen overflow-hidden relative">
+    <div className="h-screen overflow relative">
       <div className="bg-secondary h-1/5 w-full flex items-center px-4">
         <div className="grow">
           <svg

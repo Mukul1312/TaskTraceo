@@ -80,7 +80,7 @@ export default function Dashboard() {
   const formattedDate = formatDate(new Date()); // Format: Saturday, Feb 20 2024
 
   return (
-    <div className="pt-5 h-screen overflow-hidden relative">
+    <div className="pt-5 h-screen relative">
       <div className="flex flex-row justify-between items-center mx-5">
         <span className="text-[12px] font-normal select-none lg:select-auto">{formattedDate}</span>
         <svg
@@ -102,11 +102,11 @@ export default function Dashboard() {
         <p className="text-[24px] font-bold select-none lg:select-auto">Welcome {loaderData.user.name}</p>
         <p className="text-[16px] font-medium text-[#474747] select-none lg:select-auto">Have a nice day !</p>
       </div>
-      <div className="ml-5 mt-5">
+      <div className="ml-5 mt-5 overflow-hidden">
         <p className="text-[20px] font-semibold leading-10 select-none lg:select-auto">My Priority Task</p>
         {urgentTaskList.length ? <Carousel carouselItems={urgentTaskList} /> : <NewTaskText />}
       </div>
-      <div className="mx-5 mt-5">
+      <div className="mx-5 mt-5 overflow">
         <p className="text-[20px] font-semibold leading-10 select-none lg:select-auto">Daily Task</p>
         {dailyTaskList.length ? <TaskCarousel carouselItems={dailyTaskList} /> : <NewTaskText />}
       </div>

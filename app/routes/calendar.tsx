@@ -58,7 +58,7 @@ export default function Calendar() {
     console.log(actionData);
   }
   return (
-    <div className="pt-5 h-screen overflow-hidden relative">
+    <div className="pt-5 h-screen overflow relative">
       <div className="flex flex-col gap-5 md:gap-10 justify-start items-center mx-5 h-full">
         <div className="flex flex-col gap-3  mt-10 ">
           <span className="text-center font-bold text-[20px] select-none lg:select-auto">Create Priority Task</span>
