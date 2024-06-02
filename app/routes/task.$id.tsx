@@ -1,7 +1,8 @@
 import { usePush } from "@remix-pwa/push/client";
 import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { Form, useLoaderData, useNavigate, useSubmit } from "@remix-run/react";
-import Notification, { subscription, agenda } from "~/.server/models/notification.model";
+import { agenda } from "~/.server/agenda";
+import Notification, { subscription } from "~/.server/models/notification.model";
 import UrgentTask from "~/.server/models/urgentTask.model";
 import { sendNotification } from "~/.server/push";
 
@@ -23,9 +24,35 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const intent = String(formData.get("intent"));
   const taskId = String(formData.get("taskId"));
 
+  agenda.define(`sentNotification${taskId}`, async (job: any) => {
+    console.log("SENDING NOTIFICATION");
+    const { subscription, task } = job.attrs.data;
+    try {
+      sendNotification({
+        subscriptions: [subscription],
+        vapidDetails: {
+          publicKey: "BDuFo596tYfXnz-SmaM2zfIaOwj-VRQYKCat5_u_TiLF2Z80n7v0YR3o9IOif9c2vZi9cNoC8bMmIswuu4LfJ84",
+          privateKey: "iEp35yaPjAbBvyq_w3LGf0LxdybjREoky_f0x7MmaXg",
+        },
+        notification: {
+          title: `Time Over!`,
+          options: {
+            body: `Task - ${task} reaches end.`,
+          },
+        },
+        options: {},
+      });
+      console.log("Notification sent");
+    } catch (error) {
+      console.error("Error sending notification:", error);
+    }
+  });
+
   console.log("TASK ACTION RUNNING: intent:", intent);
   switch (intent) {
     case "add-priority-task":
+      const task = await UrgentTask.getTaskById(taskId);
+      if (!task) throw new Error("Task not found or id not exists.");
       const taskname = formData.get("taskname");
       const progress = Number(formData.get("progress"));
       const remaining = String(formData.get("dead-date"));
@@ -37,9 +64,18 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         remainingTime: remaining,
         time: time,
       });
-      if (!taskId) throw new Error("Task name can't be empty");
-      "susbcribe";
-      console.log("UI: EDIT TASK: Response", response);
+      console.log("UI: TASK UPDATED", response);
+
+      if (task.time != time || task.remainingTime != remaining) {
+        const GMT5 = new Date(`${remaining}T${time}:00Z`);
+        const GMT0 = new Date(GMT5.getTime() - 5.5 * 60 * 60 * 1000);
+
+        (await agenda.jobs({ name: `sentNotification${taskId}` })).map((job) => {
+          job.schedule(GMT0);
+          job.save();
+        });
+      }
+
       break;
 
     case "subscribe":
@@ -58,37 +94,11 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       await Notification.subscribeNotification(taskId, subscription);
       console.log("UI: NOTIFICATION SUBSCRIBE");
       const GMT5 = new Date(`${taskResult.remainingTime}T${taskResult.time}:00Z`);
-      // Adjust the time by subtracting the offset difference
       const GMT0 = new Date(GMT5.getTime() - 5.5 * 60 * 60 * 1000);
       agenda.on("ready", () => {
         console.log("AGENDA READY");
       });
 
-      agenda.define(`sentNotification${taskId}`, async (job: any) => {
-        console.log("SENDING NOTIFICATION");
-        const { subscription, task } = job.attrs.data;
-        try {
-          sendNotification({
-            subscriptions: [subscription],
-            vapidDetails: {
-              publicKey: "BDuFo596tYfXnz-SmaM2zfIaOwj-VRQYKCat5_u_TiLF2Z80n7v0YR3o9IOif9c2vZi9cNoC8bMmIswuu4LfJ84",
-              privateKey: "iEp35yaPjAbBvyq_w3LGf0LxdybjREoky_f0x7MmaXg",
-            },
-            notification: {
-              title: "Reminder",
-              options: {
-                body: task,
-              },
-            },
-            options: {},
-          });
-          console.log("Notification sent");
-        } catch (error) {
-          console.error("Error sending notification:", error);
-        }
-      });
-
-      await agenda.start();
       await agenda.schedule(GMT0, `sentNotification${taskId}`, {
         subscription: subscription,
         task: taskResult.name,
@@ -100,7 +110,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         shouldNotify: false,
       });
       const result2 = await Notification.unsubscribeNotification(taskId);
-      console.log("UI: NOTIFICATION UNSUBSCRIBE", result2);
+      const jobs = await agenda.cancel({ name: `sentNotification${taskId}` });
+
+      console.log("UI: NOTIFICATION UNSUBSCRIBE", jobs);
       break;
   }
 
@@ -259,22 +271,3 @@ export default function Task() {
     </div>
   );
 }
-
-// <input
-//   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-//   placeholder="78"
-//   defaultValue={78}
-//   required
-// />;
-
-//  <label htmlFor="progress" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-//               Progress
-//             </label>
-//             <input
-//               type="range"
-//               name="progress"
-//               min={0}
-//               max="100"
-//               value={loaderData.progress}
-//               className="range range-xs range-primary"
-//             />
