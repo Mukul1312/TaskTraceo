@@ -1,4 +1,3 @@
-import Agenda from "agenda";
 import mongoose, { Model, Schema } from "mongoose";
 import { z } from "zod";
 import UrgentTask from "./urgentTask.model";
@@ -68,5 +67,3 @@ NotificationSchemaObj.static("unsubscribeNotification", async function (taskId: 
 const Notification = connection.model<NotificationType, NotificationModelType>("Notification", NotificationSchemaObj);
 
 export default Notification;
-
-export const agenda = new Agenda({ db: { address: DB_URI } });

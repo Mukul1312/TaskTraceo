@@ -25,7 +25,8 @@ const pushManager = new PushManager({
     console.log("SERVICE WORKER: Handling Incoming push events", messageObj);
 
     self.registration.showNotification(messageObj.title, {
-      body: messageObj.body,
+      body: messageObj.options.body,
+      icon: "https://img.icons8.com/ios-filled/50/t.png",
     });
   },
   handleNotificationClick: (event) => {
