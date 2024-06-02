@@ -21,6 +21,7 @@ const Z_UrgentImportantTask = z.object({
   theme: z.string(),
   status: z.boolean(),
   time: z.string(),
+  shouldNotify: z.boolean().optional().default(false),
   user: z.string(),
 });
 
@@ -44,6 +45,7 @@ const UrgentTaskSchemaObj = new Schema<UrgentTaskType, UrgentTaskModelType>({
   theme: { type: String, required: true },
   status: { type: Boolean, required: true },
   time: { type: String, required: true },
+  shouldNotify: { type: Boolean, default: false },
   // @ts-ignore
   user: { type: Schema.Types.ObjectId, ref: "User" },
 });

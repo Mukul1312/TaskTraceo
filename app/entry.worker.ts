@@ -15,3 +15,29 @@ self.addEventListener("activate", (event) => {
 
   event.waitUntil(self.clients.claim());
 });
+
+import { PushManager } from "@remix-pwa/push/client";
+
+const pushManager = new PushManager({
+  handlePushEvent: (event) => {
+    // Handle incoming push event
+    const messageObj = event.data?.json();
+    console.log("SERVICE WORKER: Handling Incoming push events", messageObj);
+
+    self.registration.showNotification(messageObj.title, {
+      body: messageObj.body,
+    });
+  },
+  handleNotificationClick: (event) => {
+    // Handle notification click event
+    console.log("SERVICE WORKER: Handling Notfication click events");
+  },
+  handleNotificationClose: (event) => {
+    // Handle notification close event
+    console.log("SERVICE WORKER: Handling Notfication Notification Close");
+  },
+  handleNotificationError: (event) => {
+    // Handle notification error event
+    console.log("SERVICE WORKER: Handling Notfication Notification Error");
+  },
+});
