@@ -55,11 +55,11 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       const taskResult = await UrgentTask.updateTask(taskId, {
         shouldNotify: true,
       });
-      const subscriptionResult = await Notification.subscribeNotification(taskId, subscription);
+      await Notification.subscribeNotification(taskId, subscription);
       console.log("UI: NOTIFICATION SUBSCRIBE");
-      const date = new Date(`${taskResult.remainingTime}T${taskResult.time}:00Z`);
-      const dateNow = new Date();
-
+      const GMT5 = new Date(`${taskResult.remainingTime}T${taskResult.time}:00Z`);
+      // Adjust the time by subtracting the offset difference
+      const GMT0 = new Date(GMT5.getTime() - 5.5 * 60 * 60 * 1000);
       agenda.on("ready", () => {
         console.log("AGENDA READY");
       });
@@ -75,9 +75,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
               privateKey: "iEp35yaPjAbBvyq_w3LGf0LxdybjREoky_f0x7MmaXg",
             },
             notification: {
-              title: "Task Reminder",
+              title: "Reminder",
               options: {
-                body: "test notification from the server" + task,
+                body: task,
               },
             },
             options: {},
@@ -89,7 +89,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       });
 
       await agenda.start();
-      await agenda.schedule("10 seconds", `sentNotification${taskId}`, {
+      await agenda.schedule(GMT0, `sentNotification${taskId}`, {
         subscription: subscription,
         task: taskResult.name,
       });
