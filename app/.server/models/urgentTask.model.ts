@@ -21,7 +21,7 @@ const Z_UrgentImportantTask = z.object({
   theme: z.string(),
   status: z.boolean(),
   time: z.string(),
-  shouldNotify: z.boolean().optional().default(false),
+  shouldNotify: z.boolean().default(false),
   user: z.string(),
 });
 

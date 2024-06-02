@@ -32,6 +32,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         progress: progress,
         remainingTime: remaining,
         theme: generatePastelColor(),
+        shouldNotify: false,
         time: time,
         user: user.id,
       });
