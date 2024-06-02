@@ -1,15 +1,17 @@
 import { usePush } from "@remix-pwa/push/client";
 import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { Form, useLoaderData, useNavigate, useSubmit } from "@remix-run/react";
+import Notification, { subscription, agenda } from "~/.server/models/notification.model";
 import UrgentTask from "~/.server/models/urgentTask.model";
 import { sendNotification } from "~/.server/push";
-import { NotificationButton } from "~/components/NotificationButton";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   console.log("UI: TASK: LOADER: params", params.id);
 
   if (!params.id) throw new Error("Params not found.");
   const task = await UrgentTask.getTaskById(params.id);
+
+  const task2 = await UrgentTask.find();
 
   if (!task) throw new Error("Task not found");
 
@@ -19,16 +21,16 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const intent = String(formData.get("intent"));
+  const taskId = String(formData.get("taskId"));
 
-  console.log("TASK ID ACTION RUNNING: intent:", intent);
+  console.log("TASK ACTION RUNNING: intent:", intent);
   switch (intent) {
     case "add-priority-task":
       const taskname = formData.get("taskname");
-      const taskId = formData.get("taskId");
       const progress = Number(formData.get("progress"));
       const remaining = String(formData.get("dead-date"));
       const time = String(formData.get("time"));
-      const response = await UrgentTask.updateTask(String(taskId), {
+      const response = await UrgentTask.updateTask(taskId, {
         name: String(taskname),
         status: progress == 100,
         progress: progress,
@@ -41,35 +43,64 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       break;
 
     case "subscribe":
-      const endpoint = formData.get("endpoint");
       const subscriptionObjectToo = JSON.parse(String(formData.get("subscriptionObjectToo")));
-      console.log("Subscribe to event", endpoint);
-      console.log("subscriptionObjectToo", subscriptionObjectToo);
 
-      const subscriptions = [
-        {
-          endpoint: subscriptionObjectToo.endpoint,
-          keys: {
-            p256dh: subscriptionObjectToo.keys.p256dh,
-            auth: subscriptionObjectToo.keys.auth,
-          },
+      const subscription = {
+        endpoint: subscriptionObjectToo.endpoint,
+        keys: {
+          p256dh: subscriptionObjectToo.keys.p256dh,
+          auth: subscriptionObjectToo.keys.auth,
         },
-      ];
+      } as subscription;
+      const taskResult = await UrgentTask.updateTask(taskId, {
+        shouldNotify: true,
+      });
+      const subscriptionResult = await Notification.subscribeNotification(taskId, subscription);
+      console.log("UI: NOTIFICATION SUBSCRIBE");
+      const date = new Date(`${taskResult.remainingTime}T${taskResult.time}:00Z`);
+      const dateNow = new Date();
 
-      const vapidDetails = {
-        publicKey: "BDuFo596tYfXnz-SmaM2zfIaOwj-VRQYKCat5_u_TiLF2Z80n7v0YR3o9IOif9c2vZi9cNoC8bMmIswuu4LfJ84",
-        privateKey: "iEp35yaPjAbBvyq_w3LGf0LxdybjREoky_f0x7MmaXg",
-      };
+      agenda.on("ready", () => {
+        console.log("AGENDA READY");
+      });
 
-      const notification = {
-        title: "Hello, World!",
-        body: "Test notification",
-        options: {
-          body: "This is a test notification from the server",
-        },
-      };
+      agenda.define(`sentNotification${taskId}`, async (job: any) => {
+        console.log("SENDING NOTIFICATION");
+        const { subscription, task } = job.attrs.data;
+        try {
+          sendNotification({
+            subscriptions: [subscription],
+            vapidDetails: {
+              publicKey: "BDuFo596tYfXnz-SmaM2zfIaOwj-VRQYKCat5_u_TiLF2Z80n7v0YR3o9IOif9c2vZi9cNoC8bMmIswuu4LfJ84",
+              privateKey: "iEp35yaPjAbBvyq_w3LGf0LxdybjREoky_f0x7MmaXg",
+            },
+            notification: {
+              title: "Task Reminder",
+              options: {
+                body: "test notification from the server" + task,
+              },
+            },
+            options: {},
+          });
+          console.log("Notification sent");
+        } catch (error) {
+          console.error("Error sending notification:", error);
+        }
+      });
 
-      sendNotification({ subscriptions, vapidDetails, notification, options: {} });
+      await agenda.start();
+      await agenda.schedule("10 seconds", `sentNotification${taskId}`, {
+        subscription: subscription,
+        task: taskResult.name,
+      });
+
+      break;
+    case "unsubscribe":
+      const taskResultF = await UrgentTask.updateTask(taskId, {
+        shouldNotify: false,
+      });
+      const result2 = await Notification.unsubscribeNotification(taskId);
+      console.log("UI: NOTIFICATION UNSUBSCRIBE", result2);
       break;
   }
 
@@ -88,6 +119,16 @@ export default function Task() {
   const handleSubscribe = (isSubscribed: boolean, taskId: string) => {
     if (isSubscribed) {
       unsubscribeFromPush();
+      submit(
+        {
+          intent: "unsubscribe",
+          taskId: taskId,
+        },
+        {
+          method: "POST",
+          action: `/task/${taskId}`,
+        }
+      );
     } else {
       subscribeToPush(
         publicKey,
@@ -98,6 +139,7 @@ export default function Task() {
             {
               intent: "subscribe",
               subscriptionObjectToo: JSON.stringify(subscription),
+              taskId: taskId,
             },
             {
               method: "POST",
@@ -135,7 +177,7 @@ export default function Task() {
         <button
           name="intent"
           value="susbcribe"
-          onClick={() => handleSubscribe(isSubscribed, loaderData._id)}
+          onClick={() => handleSubscribe(loaderData.shouldNotify, loaderData._id)}
           className="btn btn-md select-none w-40 self-end"
         >
           <svg
@@ -144,7 +186,7 @@ export default function Task() {
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className={`size-4 ${isSubscribed ? "stroke-black fill-black" : ""}`}
+            className={`size-4 ${loaderData.shouldNotify ? "stroke-black fill-black" : ""}`}
           >
             <path
               strokeLinecap="round"
@@ -152,7 +194,7 @@ export default function Task() {
               d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"
             />
           </svg>
-          {isSubscribed ? "Unsubscribe" : "Subscribe"}
+          {loaderData.shouldNotify ? "Unsubscribe" : "Subscribe"}
         </button>
         <Form className="flex flex-col gap-4" method="POST" action={`/task/${loaderData._id}`}>
           <div>
