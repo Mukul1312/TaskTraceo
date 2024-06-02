@@ -1,8 +1,9 @@
+import { usePush } from "@remix-pwa/push/client";
 import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { Form, useLoaderData, useNavigate } from "@remix-run/react";
+import { Form, useLoaderData, useNavigate, useSubmit } from "@remix-run/react";
 import UrgentTask from "~/.server/models/urgentTask.model";
-import { User as UserType, auth } from "~/services/auth.server";
-import { sessionStorage } from "~/services/session.server";
+import { sendNotification } from "~/.server/push";
+import { NotificationButton } from "~/components/NotificationButton";
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   console.log("UI: TASK: LOADER: params", params.id);
@@ -17,23 +18,60 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
-  const taskname = formData.get("taskname");
-  const taskId = formData.get("taskId");
+  const intent = String(formData.get("intent"));
 
-  if (!taskId) throw new Error("Task name can't be empty");
+  console.log("TASK ID ACTION RUNNING: intent:", intent);
+  switch (intent) {
+    case "add-priority-task":
+      const taskname = formData.get("taskname");
+      const taskId = formData.get("taskId");
+      const progress = Number(formData.get("progress"));
+      const remaining = String(formData.get("dead-date"));
+      const time = String(formData.get("time"));
+      const response = await UrgentTask.updateTask(String(taskId), {
+        name: String(taskname),
+        status: progress == 100,
+        progress: progress,
+        remainingTime: remaining,
+        time: time,
+      });
+      if (!taskId) throw new Error("Task name can't be empty");
+      "susbcribe";
+      console.log("UI: EDIT TASK: Response", response);
+      break;
 
-  const progress = Number(formData.get("progress"));
-  const remaining = String(formData.get("dead-date"));
-  const time = String(formData.get("time"));
-  const response = await UrgentTask.updateTask(String(taskId), {
-    name: String(taskname),
-    status: progress == 100,
-    progress: progress,
-    remainingTime: remaining,
-    time: time,
-  });
+    case "subscribe":
+      const endpoint = formData.get("endpoint");
+      const subscriptionObjectToo = JSON.parse(String(formData.get("subscriptionObjectToo")));
+      console.log("Subscribe to event", endpoint);
+      console.log("subscriptionObjectToo", subscriptionObjectToo);
 
-  console.log("UI: EDIT TASK: Response", response);
+      const subscriptions = [
+        {
+          endpoint: subscriptionObjectToo.endpoint,
+          keys: {
+            p256dh: subscriptionObjectToo.keys.p256dh,
+            auth: subscriptionObjectToo.keys.auth,
+          },
+        },
+      ];
+
+      const vapidDetails = {
+        publicKey: "BDuFo596tYfXnz-SmaM2zfIaOwj-VRQYKCat5_u_TiLF2Z80n7v0YR3o9IOif9c2vZi9cNoC8bMmIswuu4LfJ84",
+        privateKey: "iEp35yaPjAbBvyq_w3LGf0LxdybjREoky_f0x7MmaXg",
+      };
+
+      const notification = {
+        title: "Hello, World!",
+        body: "Test notification",
+        options: {
+          body: "This is a test notification from the server",
+        },
+      };
+
+      sendNotification({ subscriptions, vapidDetails, notification, options: {} });
+      break;
+  }
 
   return null;
 };
@@ -41,8 +79,38 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 export default function Task() {
   const loaderData = useLoaderData<typeof loader>();
   const navigate = useNavigate();
+  const { subscribeToPush, unsubscribeFromPush, isSubscribed, pushSubscription, requestPermission } = usePush();
+  const publicKey = "BDuFo596tYfXnz-SmaM2zfIaOwj-VRQYKCat5_u_TiLF2Z80n7v0YR3o9IOif9c2vZi9cNoC8bMmIswuu4LfJ84";
+  const submit = useSubmit();
 
   console.log(loaderData);
+
+  const handleSubscribe = (isSubscribed: boolean, taskId: string) => {
+    if (isSubscribed) {
+      unsubscribeFromPush();
+    } else {
+      subscribeToPush(
+        publicKey,
+        (subscription) => {
+          console.log("User subscribed to push notifications!", subscription);
+
+          submit(
+            {
+              intent: "subscribe",
+              subscriptionObjectToo: JSON.stringify(subscription),
+            },
+            {
+              method: "POST",
+              action: `/task/${taskId}`,
+            }
+          );
+        },
+        (error) => {
+          console.error("Error subscribing user to push notifications!", error);
+        }
+      );
+    }
+  };
 
   return (
     <div className="h-screen overflow-hidden relative">
@@ -62,8 +130,30 @@ export default function Task() {
         </div>
         <p className="text-white grow self-center font-bold text-xl">Edit Task</p>
       </div>
-      <div className="relative top-[-5%] z-10 bg-white h-3/5 rounded-t-[50px] pt-20 px-5">
+      <div className="flex flex-col w-full  relative top-[-5%] z-10 bg-white h-3/5 rounded-t-[50px] pt-20 px-5">
         <h1 className="text-secondary text-center text-3xl font-extrabold mb-10">{loaderData.name}</h1>
+        <button
+          name="intent"
+          value="susbcribe"
+          onClick={() => handleSubscribe(isSubscribed, loaderData._id)}
+          className="btn btn-md select-none w-40 self-end"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className={`size-4 ${isSubscribed ? "stroke-black fill-black" : ""}`}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"
+            />
+          </svg>
+          {isSubscribed ? "Unsubscribe" : "Subscribe"}
+        </button>
         <Form className="flex flex-col gap-4" method="POST" action={`/task/${loaderData._id}`}>
           <div>
             <label htmlFor="first_name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
