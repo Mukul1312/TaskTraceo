@@ -68,7 +68,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     id: user._id,
   });
 
-  return redirect("/dashboard", {
+  return redirect("/onboarding/first", {
     headers: {
       "Set-Cookie": await commitSession(session),
     },
