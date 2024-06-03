@@ -48,6 +48,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     }
   });
 
+  await agenda.start();
+
   console.log("TASK ACTION RUNNING: intent:", intent);
   switch (intent) {
     case "add-priority-task":

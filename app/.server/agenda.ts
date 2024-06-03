@@ -6,5 +6,3 @@ if (!DB_URI) {
   throw new Error("DB_CONNECT env not found");
 }
 export const agenda = new Agenda({ db: { address: DB_URI } });
-
-await agenda.start();
