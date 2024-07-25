@@ -6,9 +6,6 @@ Our project leverages ReactJS, Data Science, and NodeJS to create a user-friendl
 - Mukul Dubey
 - Mohammad Sarfaraz
 
-### One-Line Description
-A comprehensive platform combining ReactJS, Data Science, and NodeJS to optimize daily productivity through activity tracking and personalized recommendations.
-
 # Welcome to Remix + Vite!
 
 📖 See the [Remix docs](https://remix.run/docs) and the [Remix Vite docs](https://remix.run/docs/en/main/guides/vite) for details on supported features.
