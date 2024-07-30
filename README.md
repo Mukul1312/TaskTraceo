@@ -44,3 +44,8 @@ Make sure to deploy the output of `npm run build`
 
 - `build/server`
 - `build/client`
+
+# Results Generated / Screenshots of running deployed Progressive Web App (PWA)
+
+<img src="https://github.com/user-attachments/assets/2c472f05-ac52-4b05-899b-3f46f7115b47" alt="Splash Screen" width="275" hieght="712"/> <img src="https://github.com/user-attachments/assets/e57444e8-f39a-4f1b-8b88-8d6e846b131e" alt="Login" width="275" hieght="712"/> <img src="https://github.com/user-attachments/assets/33ee20fd-5d93-4902-b948-49b691e9b690" alt="Get Started first" width="275" hieght="712"/>
+
