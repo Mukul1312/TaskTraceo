@@ -64,7 +64,11 @@ Make sure to deploy the output of `npm run build`
 </p>
 
 <p align = center>
-<img src="https://github.com/user-attachments/assets/a568e81c-7531-435c-b28f-c1b1823812f1" width="275" hieght="712"/> <img src="https://github.com/user-attachments/assets/e57444e8-f39a-4f1b-8b88-8d6e846b131e" alt="Login" width="275" hieght="712"/> <img src="https://github.com/user-attachments/assets/327bdebe-e7f5-4241-b8d0-7c9b695f8ad3" alt="Register" width="275" hieght="712"/> 
+<img src="https://github.com/user-attachments/assets/56083103-2eed-4b69-ade6-1bf471889558" alt="Get Started Second Page" width="275" hieght="712"/> <img src="https://github.com/user-attachments/assets/a568e81c-7531-435c-b28f-c1b1823812f1" width="275" hieght="712"/> 
+</p>
+
+<p align = center>
+<img src="https://github.com/user-attachments/assets/e57444e8-f39a-4f1b-8b88-8d6e846b131e" alt="Login" width="275" hieght="712"/> <img src="https://github.com/user-attachments/assets/327bdebe-e7f5-4241-b8d0-7c9b695f8ad3" alt="Register" width="275" hieght="712"/> 
 </p>
 
 <p align = center>
