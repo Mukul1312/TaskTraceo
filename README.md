@@ -60,11 +60,11 @@ Make sure to deploy the output of `npm run build`
 # Results Generated / Screenshots of Deployed Progressive Web App (PWA)
 
 <p align = center>
-<img src="https://github.com/user-attachments/assets/2c472f05-ac52-4b05-899b-3f46f7115b47" alt="Splash Screen" width="275" hieght="712"/> <img src="https://github.com/user-attachments/assets/33ee20fd-5d93-4902-b948-49b691e9b690" alt="Get Started first" width="275" hieght="712" /> <img src="https://github.com/user-attachments/assets/56083103-2eed-4b69-ade6-1bf471889558" alt="Get Started Second Page" width="275" hieght="712"/>  
+<img src="https://github.com/user-attachments/assets/2c472f05-ac52-4b05-899b-3f46f7115b47" alt="Splash Screen" width="275" hieght="712"/> <img src="https://github.com/user-attachments/assets/33ee20fd-5d93-4902-b948-49b691e9b690" alt="Get Started first" width="275" hieght="712" />
 </p>
 
-<p align = center>
-<img src="https://github.com/user-attachments/assets/56083103-2eed-4b69-ade6-1bf471889558" alt="Get Started Second Page" width="275" hieght="712"/> <img src="https://github.com/user-attachments/assets/a568e81c-7531-435c-b28f-c1b1823812f1" width="275" hieght="712"/> 
+<p align = center> 
+<img src="https://github.com/user-attachments/assets/56083103-2eed-4b69-ade6-1bf471889558" alt="Get Started Second Page" width="275" hieght="712"/> <img src="https://github.com/user-attachments/assets/a568e81c-7531-435c-b28f-c1b1823812f1" alt="Getting Started Third Page" width="275" hieght="712"/> 
 </p>
 
 <p align = center>
