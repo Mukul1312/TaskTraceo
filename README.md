@@ -2,11 +2,13 @@
 Our project leverages ReactJS, Data Science, and NodeJS to create a user-friendly platform for tracking daily activities, analyzing productivity patterns, and providing personalized recommendations to enhance time management and efficiency.
 
 ## Team Member
-- Arshveer Singh Arora
-- Mukul Dubey
-- Mohammad Sarfaraz
+- Mr. Arshveer Singh Arora (Prediction Models)
+- Mr. Mukul Dubey (Frontend & Backend Deployement)
+- Mr. Mohammad Sarfaraz (UI/UX Desings)
+- Mr. Rishabh Vaish (Reports)
 
-# Welcome to Remix + Vite!
+# Deployement by Mr. Mukul Dubey 
+## Welcome to Remix + Vite!
 
 📖 See the [Remix docs](https://remix.run/docs) and the [Remix Vite docs](https://remix.run/docs/en/main/guides/vite) for details on supported features.
 
